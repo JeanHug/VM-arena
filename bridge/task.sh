@@ -1,12 +1,12 @@
 Q="Quelle est la capitale de la France ?"
-echo "===== [ACTION] TEST BIG MODEL : Gemma-4-26B-A4B UD-IQ4_XS (13,9 Go) ====="
+echo "===== [ACTION] TEST BIG MODEL : Qwen3.8-27B Q3 (13,8 Go, dense) ====="
 echo "# host: $(hostname) | RAM totale: $(free -h | awk '/Mem:/{print $2}')"
 cd "$HOME/persist" || exit 1
 export LD_LIBRARY_PATH="$PWD/bin:${LD_LIBRARY_PATH:-}"
 if ! bin/llama-cli --version >/dev/null 2>&1; then echo "ERREUR moteur absent"; exit 1; fi
 echo "moteur : $(bin/llama-cli --version 2>&1 | head -1)"
-REPO="unsloth/gemma-4-26B-A4B-it-GGUF"
-PREFS="UD-IQ4_XS|IQ4_XS|UD-Q3_K_M|IQ3_M"
+REPO="unsloth/Qwen3.8-27B-GGUF"
+PREFS="UD-Q3_K_M|Q3_K_M|UD-IQ3_M|IQ3_M|UD-IQ3_XS|IQ3_XS"
 FILE=$(curl -sL --max-time 30 "https://huggingface.co/api/models/$REPO" | PREFS="$PREFS" python3 -c "
 import json,sys,os
 try:
