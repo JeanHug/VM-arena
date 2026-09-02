@@ -1,30 +1,21 @@
-===== TÂCHE 0902-201707-codespace → CODESPACE =====
-# host Actions: runnervmgx7h7 | date: 2026-09-02T20:18:55Z
+===== TÂCHE 0902-201852-action → ACTION (exécution locale) =====
+# host: runnervmgx7h7 | date: 2026-09-02T20:19:33Z
 # état persistant restauré : OUI — 31 fichiers, 40M
 
-→ codespace : laughing-guacamole-g4px7pr4v9xgfp4gr (4 cores, 16 GB RAM, 32 GB storage) — état : Shutdown
-→ démarrage…
-✅ codespace démarré
-
------ DÉBUT DE LA TÂCHE SUR LE CODESPACE -----
-===== [CODESPACE] SETUP NOEUD RPC (build b10760 calé sur le pilote) =====
-# host: codespaces-95b38f | date: 2026-09-02T20:19:12Z
-ggml-rpc-server
-libggml-base.so
-libggml-base.so.0
-libggml-base.so.0.22.0
-libggml-cpu-alderlake.so
-libggml-cpu-cannonlake.so
-binaire rpc : /home/codespace/rpcbin/ggml-rpc-server
---- processus ---
-499 /home/codespace/rpcbin/ggml-rpc-server --port 50052
---- port 50052 ---
-LISTEN 0      1          127.0.0.1:50052      0.0.0.0:*          
---- RAM libre pour les couches du modèle ---
-               total        used        free      shared  buff/cache   available
-Mem:            15Gi       1.3Gi       7.3Gi        58Mi       7.4Gi        14Gi
-===== NOEUD RPC PRÊT — il doit rester allumé pour le test fédéré =====
------ FIN DE LA TÂCHE (code=0) -----
-→ codespace laissé en l'état (politique : keep)
-[wrapper] tâche 0902-201707-codespace terminée sur codespace (code 0)
+----- DÉBUT DE LA TÂCHE -----
+===== [FEDERE 32 Go] GEMMA-4-26B-A4B UD-Q4_K_M (16,9 Go) réparti sur 2 nœuds =====
+# host pilote: runnervmgx7h7 | date: 2026-09-02T20:19:33Z
+codespace nœud distant : laughing-guacamole-g4px7pr4v9xgfp4gr (Available)
+→ Available ✓ (démarrage: 0s)
+--- (re)lancement du nœud rpc-server sur le codespace (via SSH) ---
+shell closed: exit status 255
+--- tunnel SSH Actions→Codespace (port local 150052) ---
+TUNNEL KO:
+      --profile string      Name of the SSH profile to use
+  -R, --repo string         Filter codespace selection by repository name (user/repo)
+      --repo-owner string   Filter codespace selection by repository owner (username or org)
+      --server-port int     SSH server port number (0 => pick unused)
+  
+----- FIN DE LA TÂCHE (code=1) -----
+[wrapper] tâche 0902-201852-action terminée sur action (code 0)
 snapshot: -rw-r--r-- 1 runner runner 16349060 Sep  2 20:19 bridge/state/snapshot.tar.gz
