@@ -76,7 +76,7 @@ cd "$HOME/persist" || exit 1
 
   # copie de la tâche + exécution SSH
   echo "----- DÉBUT DE LA TÂCHE SUR LE CODESPACE -----"
-  gh codespace cp -c "$CS" bridge/task.sh "remote:/tmp/vm-task.sh" 2>&1 || {
+  gh codespace cp -c "$CS" "$GITHUB_WORKSPACE/bridge/task.sh" "remote:/tmp/vm-task.sh" 2>&1 || {
     echo "❌ échec de copie de la tâche"; exit 0;
   }
   gh codespace ssh -c "$CS" -- 'bash /tmp/vm-task.sh' 2>&1
