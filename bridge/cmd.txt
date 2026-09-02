@@ -1,14 +1,22 @@
-echo "===== SPECS DU CODESPACE ====="
-echo "--- hostname ---"
+echo "===== IDENTITE VM ====="
 hostname
-echo "--- CPU ---"
-nproc
-lscpu | grep -E "Model name|^CPU\(s\)|Core|Socket"
-echo "--- RAM ---"
-free -h
-echo "--- Disque ---"
-df -h /
-echo "--- OS ---"
+echo ""
+echo "===== OS ====="
 cat /etc/os-release | head -2
 uname -a
+echo ""
+echo "===== CPU ====="
+nproc
+lscpu | grep -E "Model name|^CPU\(s\)|Core|Socket|NUMA"
+echo ""
+echo "===== RAM ====="
+free -h
+grep MemTotal /proc/meminfo
+echo ""
+echo "===== DISQUE ====="
+df -h /
+echo ""
+echo "===== RESEAU (IP publique) ====="
+curl -s --max-time 10 https://api.ipify.org && echo ""
+echo ""
 echo "===== FIN SPECS ====="
