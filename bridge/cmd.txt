@@ -44,8 +44,8 @@ cd "$HOME/persist" || exit 1
   echo ""
   echo "--- 2) liste des codespaces du repo ---"
   gh codespace list --repo JeanHug/VM-arena \
-    --json name,state,machine \
-    --template '{{range .}}{{.name}} | {{.state}} | {{.machine.displayName}}{{"\n"}}{{end}}' 2>&1
+    --json name,state,machineName \
+    --template '{{range .}}{{.name}} | {{.state}} | {{.machineName}}{{"\n"}}{{end}}' 2>&1
 
   CS=$(gh codespace list --repo JeanHug/VM-arena --json name --jq '.[0].name' 2>/dev/null)
   if [ -z "$CS" ]; then
@@ -54,18 +54,25 @@ cd "$HOME/persist" || exit 1
   fi
   echo "→ codespace sélectionné : $CS"
 
-  STATE=$(gh codespace list --repo JeanHug/VM-arena --json name,state --jq '.[0].state' 2>/dev/null)
-  echo "→ état actuel : $STATE"
-
-  if [ "$STATE" != "Running" ]; then
-    echo ""
-    echo "--- 3) démarrage du codespace (30-90 s)… ---"
-    if gh codespace start -c "$CS" 2>&1; then
-      echo "✅ codespace démarré"
-    else
-      echo "❌ échec du démarrage"
-      exit 0
-    fi
+  echo ""
+  echo "--- 3) démarrage via API REST (polling jusqu'à 3 min)… ---"
+  if gh api -X POST "user/codespaces/$CS/start" --silent 2>&1; then
+    echo "✅ requête de démarrage envoyée"
+  else
+    echo "⚠️ la requête a répondu une erreur (peut-être déjà en marche), on vérifie l'état…"
+  fi
+  ST=""
+  for i in $(seq 1 18); do
+    sleep 10
+    ST=$(gh api "user/codespaces/$CS" --jq .state 2>/dev/null)
+    echo "   [$((i*10))s] état : $ST"
+    [ "$ST" = "Running" ] && break
+  done
+  if [ "$ST" = "Running" ]; then
+    echo "✅ CODESPACE EN MARCHE"
+  else
+    echo "❌ le codespace n'a pas démarré"
+    exit 0
   fi
 
   echo ""
@@ -78,7 +85,7 @@ cd "$HOME/persist" || exit 1
 
   echo ""
   echo "--- 6) arrêt du codespace (économie du quota, disque conservé) ---"
-  gh codespace stop -c "$CS" 2>&1 && echo "✅ arrêté — le disque et le marqueur persistent"
+  gh api -X POST "user/codespaces/$CS/stop" --silent 2>&1 && echo "✅ arrêté — le disque et le marqueur persistent"
   echo ""
   echo "===== FIN DU TEST ====="
 }
