@@ -1,35 +1,6 @@
-===== VM-BRIDGE RESULT =====
-# host: runnervmgx7h7
-# date: 2026-09-02T12:37:11Z
-
-===== IDENTITE VM =====
-runnervmgx7h7
-
-===== OS =====
-PRETTY_NAME="Ubuntu 24.04.4 LTS"
-NAME="Ubuntu"
-Linux runnervmgx7h7 6.17.0-1022-azure #22-Ubuntu SMP Mon Jul 27 17:24:03 UTC 2026 x86_64 x86_64 x86_64 GNU/Linux
-
-===== CPU =====
-4
-CPU(s):                                  4
-Model name:                              AMD EPYC 9V74 80-Core Processor
-Core(s) per socket:                      2
-Socket(s):                               1
-NUMA node(s):                            1
-NUMA node0 CPU(s):                       0-3
-
-===== RAM =====
-               total        used        free      shared  buff/cache   available
-Mem:            15Gi       1.4Gi        11Gi        40Mi       3.3Gi        14Gi
-Swap:          3.0Gi          0B       3.0Gi
-MemTotal:       16373452 kB
-
-===== DISQUE =====
-Filesystem      Size  Used Avail Use% Mounted on
-/dev/root       145G   59G   86G  41% /
-
-===== RESEAU (IP publique) =====
-68.154.54.35
-
-===== FIN =====
+===== RUN 1 : creation du marqueur =====
+hostname : runnervmgx7h7
+uptime   : up 7 minutes (boot: 2026-09-02 12:31:22)
+fichier cree :
+-rw-r--r-- 1 runner runner 30 Sep  2 12:39 /tmp/preuve-persistence.txt
+marqueur-persistence-XYZ-2026
