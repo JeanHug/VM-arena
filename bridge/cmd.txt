@@ -1,16 +1,70 @@
-{
-  echo "===== RUN 2 : le marqueur a-t-il survécu ? ====="
-  echo "hostname : $(hostname)"
-  echo "uptime   : $(uptime -p) (boot: $(uptime -s))"
-  echo ""
-  if [ -f /tmp/preuve-persistence.txt ]; then
-    echo ">>> FICHIER TROUVÉ : la VM est continue (état conservé)"
-    cat /tmp/preuve-persistence.txt
-  else
-    echo ">>> FICHIER ABSENT : la VM a été réinitialisée (nouvelle machine)"
+# ============================================================
+# bridge/cmd.txt — VM PERSISTANTE
+#   L'état du dossier /workspace survit entre les runs :
+#   Phase 1 : restauration de bridge/state/snapshot.tar.gz → /workspace
+#   Phase 2 : ZONE COMMANDES UTILISATEUR (à éditer)
+#   Phase 3 : snapshot de /workspace → commit → push (out.txt + état)
+#
+#   ⚠ Repo public : ne rien mettre de confidentiel dans /workspace.
+#   ⚠ Garder /workspace raisonnable (< ~100 Mo) : le snapshot passe par Git.
+# ============================================================
+
+set +e
+WS="/workspace"
+SNAP="bridge/state/snapshot.tar.gz"
+
+# ---------- PHASE 1 : RESTAURATION DE L'ÉTAT ----------
+mkdir -p "$WS"
+if [ -f "$SNAP" ]; then
+  tar -xzf "$SNAP" -C "$WS" 2>/dev/null
+  RESTORED="OUI — $(find "$WS" -type f | wc -l) fichiers, $(du -sh "$WS" | cut -f1)"
+else
+  RESTORED="NON — première session (aucun snapshot présent)"
+fi
+
+# ---------- PHASE 2 : ZONE COMMANDES UTILISATEUR ----------
+(
+  cd "$WS" || exit 1
+  {
+    echo "===== VM PERSISTANTE — RUN ====="
+    echo "# host: $(hostname)"
+    echo "# date: $(date -u +%FT%TZ)"
+    echo "# état restauré : $RESTORED"
+    echo ""
+
+    # >>> DEBUT COMMANDES UTILISATEUR <<<
+
+    # PREUVE DE PERSISTANCE : compteur stocké dans l'espace persistant
+    if [ -f .compteur ]; then
+      N=$(cat .compteur); N=$((N+1)); echo "$N" > .compteur
+    else
+      N=1; echo "1" > .compteur
+    fi
+    echo ">>> PREUVE : run n°$N sur cet état persistant"
+    echo ""
+    echo "--- contenu de /workspace (persistant) ---"
+    ls -la "$WS"
+    echo ""
+    echo "--- fichier .compteur : $(cat .compteur) ---"
+    echo "salut depuis la VM persistante" > bonjour.txt
+    echo "fichier bonjour.txt : $(cat bonjour.txt)"
+
+    # <<< FIN COMMANDES UTILISATEUR >>>
+  }
+) > "bridge/out.txt" 2>&1
+
+# ---------- PHASE 3 : SNAPSHOT + PUBLICATION ----------
+tar -czf "$SNAP" -C "$WS" . 2>/dev/null
+git config user.name "vm-bridge"
+git config user.email "vm-bridge@users.noreply.github.com"
+git add -f bridge/out.txt "$SNAP"
+git commit -m "bridge: resultat + snapshot de l'etat ($(date -u +%FT%TZ))" || true
+for i in 1 2 3 4 5; do
+  if git push origin HEAD:arena/01a061e4-vm-arena; then
+    echo "PUBLICATION OK"
+    break
   fi
-  echo ""
-  echo "--- autres traces du run 1 ? ---"
-  ls /tmp/ | head -20
-} > bridge/out.txt 2>&1
+  git pull --rebase origin arena/01a061e4-vm-arena || true
+  sleep 5
+done
 exit 0
