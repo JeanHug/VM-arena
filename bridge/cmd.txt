@@ -1,12 +1,8 @@
 # ============================================================
-# bridge/cmd.txt — VM PERSISTANTE (v2)
-#   L'état du dossier ~/persist survit entre les runs :
+# bridge/cmd.txt — VM PERSISTANTE
 #   Phase 1 : restauration de bridge/state/snapshot.tar.gz → ~/persist
 #   Phase 2 : ZONE COMMANDES UTILISATEUR (à éditer)
 #   Phase 3 : snapshot de ~/persist → commit → push (out.txt + état)
-#
-#   ⚠ Repo public : ne rien mettre de confidentiel dans ~/persist.
-#   ⚠ Garder ~/persist raisonnable (< ~100 Mo) : le snapshot passe par Git.
 # ============================================================
 
 set +e
@@ -26,28 +22,90 @@ fi
 (
   cd "$WS" || exit 1
   {
-    echo "===== VM PERSISTANTE — RUN ====="
+    echo "===== VM PERSISTANTE — INSTALLATION GEMMA 4 E2B + TEST ====="
     echo "# host: $(hostname)"
     echo "# date: $(date -u +%FT%TZ)"
-    echo "# espace persistant: $WS"
     echo "# état restauré : $RESTORED"
     echo ""
 
     # >>> DEBUT COMMANDES UTILISATEUR <<<
 
-    # PREUVE DE PERSISTANCE : compteur stocké dans l'espace persistant
-    if [ -f .compteur ]; then
-      N=$(cat .compteur); N=$((N+1)); echo "$N" > .compteur
+    T0=$(date +%s)
+
+    # ---- 1) MOTEUR : llama.cpp (persistant dans ~/persist/bin) ----
+    if [ -x bin/llama-cli ]; then
+      echo "[MOTEUR] déjà installé (persistant) : $(bin/llama-cli --version 2>&1 | head -1)"
     else
-      N=1; echo "1" > .compteur
+      echo "[MOTEUR] installation de llama.cpp (binaire précompilé ubuntu)…"
+      mkdir -p bin
+      REL_JSON=$(curl -sL --max-time 30 https://api.github.com/repos/ggml-org/llama.cpp/releases/latest)
+      URL=$(echo "$REL_JSON" | grep -o '"browser_download_url": *"[^"]*ubuntu-x64\.zip"' | head -1 | cut -d'"' -f4)
+      if [ -z "$URL" ]; then
+        URL=$(echo "$REL_JSON" | grep -o '"browser_download_url": *"[^"]*linux[^"]*\.zip"' | head -1 | cut -d'"' -f4)
+      fi
+      echo "[MOTEUR] téléchargement : $URL"
+      curl -sL --max-time 300 -o /tmp/llama.zip "$URL"
+      python3 -c "import zipfile; zipfile.ZipFile('/tmp/llama.zip').extractall('/tmp/llamacpp')"
+      find /tmp/llamacpp -name 'llama-cli' -exec cp {} bin/ \;
+      chmod +x bin/llama-cli
+      echo "[MOTEUR] installé : $(bin/llama-cli --version 2>&1 | head -1)"
     fi
-    echo ">>> PREUVE : run n°$N sur cet état persistant"
     echo ""
-    echo "--- contenu de ~/persist (persistant) ---"
-    ls -la "$WS"
+
+    # ---- 2) POIDS : Gemma 4 E2B (GGUF, re-téléchargés à chaque session) ----
+    echo "[POIDS] recherche du GGUF Gemma 4 E2B (unsloth, Apache 2.0)…"
+    GGUF_FILE=""
+    for REPO in unsloth/gemma-4-E2B-it-GGUF AtomicChat/gemma-4-E2B-it-assistant-GGUF; do
+      LIST=$(curl -sL --max-time 30 "https://huggingface.co/api/models/$REPO")
+      echo "[POIDS] dépôt testé : $REPO"
+      GGUF_FILE=$(echo "$LIST" | python3 -c "
+import json,sys
+try:
+    d=json.load(sys.stdin)
+    files=[s['rfilename'] for s in d.get('siblings',[]) if s['rfilename'].endswith('.gguf')]
+    for f in files:
+        if 'Q4_K_M' in f: print(f); break
+    else:
+        print(files[0] if files else '')
+except Exception:
+    pass
+")
+      if [ -n "$GGUF_FILE" ]; then echo "[POIDS] retenu : $REPO/$GGUF_FILE"; break; fi
+    done
+    if [ -z "$GGUF_FILE" ]; then
+      echo "[POIDS] ERREUR : aucun GGUF trouvé — abandon"
+      exit 1
+    fi
+    mkdir -p "$HOME/gguf-cache"
+    DL_URL="https://huggingface.co/$REPO/resolve/main/$GGUF_FILE"
+    echo "[POIDS] téléchargement : $DL_URL"
+    T1=$(date +%s)
+    curl -sL --retry 3 --max-time 600 -o "$HOME/gguf-cache/model.gguf" "$DL_URL"
+    T2=$(date +%s)
+    SIZE=$(stat -c %s "$HOME/gguf-cache/model.gguf" 2>/dev/null || echo 0)
+    echo "[POIDS] taille : $((SIZE/1024/1024)) Mo en $((T2-T1)) s"
     echo ""
-    echo "salut depuis la VM persistante (écrit au run $N)" > bonjour.txt
-    echo "fichier bonjour.txt : $(cat bonjour.txt)"
+    echo "--- RAM avant inférence ---"
+    free -h | head -2
+    echo ""
+
+    # ---- 3) TEST : « Quelle est la capitale de la France ? » ----
+    echo "===== QUESTION : Quelle est la capitale de la France ? ====="
+    PROMPT="<start_of_turn>user
+Quelle est la capitale de la France ?<end_of_turn>
+<start_of_turn>model
+"
+    bin/llama-cli --help 2>&1 | grep -q "no-cnv" && NOCNV="-no-cnv" || NOCNV=""
+    T3=$(date +%s)
+    bin/llama-cli -m "$HOME/gguf-cache/model.gguf" $NOCNV \
+      -p "$PROMPT" -n 120 --temp 0 --simple-io 2>&1 | tail -25
+    T4=$(date +%s)
+    echo "===== FIN DE RÉPONSE ====="
+    echo ""
+    echo "[TEMPS] chargement+génération : $((T4-T3)) s | total session : $(( $(date +%s) - T0 )) s"
+    echo ""
+    echo "--- RAM après ---"
+    free -h | head -2
 
     # <<< FIN COMMANDES UTILISATEUR >>>
   }
@@ -60,7 +118,7 @@ echo "snapshot: $(ls -la "$SNAP" 2>/dev/null || echo 'ECHEC CREATION')" >> bridg
 git config user.name "vm-bridge"
 git config user.email "vm-bridge@users.noreply.github.com"
 git add -f bridge/out.txt "$SNAP"
-git commit -m "bridge: resultat + snapshot de l'etat ($(date -u +%FT%TZ))" || true
+git commit -m "bridge: gemma 4 e2b — installation + test capitale de la France ($(date -u +%FT%TZ))" || true
 for i in 1 2 3 4 5; do
   if git push origin HEAD:arena/01a061e4-vm-arena; then
     echo "PUBLICATION OK"
@@ -70,7 +128,3 @@ for i in 1 2 3 4 5; do
   sleep 5
 done
 exit 0
-
-# [run de verification 2026-09-02T12:42:47Z] — contenu inchangé sinon déclenchement
-
-# [run verification persistance 2026-09-02T12:43:43Z]
