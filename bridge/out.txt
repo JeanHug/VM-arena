@@ -1,20 +1,56 @@
-===== TÂCHE 0902-202220-action → ACTION (exécution locale) =====
-# host: runnervmgx7h7 | date: 2026-09-02T20:22:31Z
+===== TÂCHE 0902-202407-action → ACTION (exécution locale) =====
+# host: runnervmgx7h7 | date: 2026-09-02T20:24:17Z
 # état persistant restauré : OUI — 31 fichiers, 40M
 
 ----- DÉBUT DE LA TÂCHE -----
 ===== [FEDERE 32 Go] GEMMA-4-26B-A4B UD-Q4_K_M (16,9 Go) sur 2 nœuds =====
-# host pilote: runnervmgx7h7 | date: 2026-09-02T20:22:31Z
-codespace nœud : laughing-guacamole-g4px7pr4v9xgfp4gr (Available)
+# host pilote: runnervmgx7h7 | date: 2026-09-02T20:24:17Z
+codespace nœud : laughing-guacamole-g4px7pr4v9xgfp4gr (Shutdown)
 --- attente SSH ---
 SSH prêt (10s)
 --- tunnel (méthode C : -L + commande sleep qui maintient) ---
-tunnel.log:
-Bad local forwarding specification '150052:127.0.0.1:50052'
+TUNNEL OK ✓ (30s)
+--- lancement rpc-server sur le nœud (motif [r]pc : pas d'auto-kill) ---
 shell closed: exit status 255
---- repli : ssh natif via --config ---
-TUNNEL B KO:
-Bad local forwarding specification '150052:127.0.0.1:50052'
------ FIN DE LA TÂCHE (code=1) -----
-[wrapper] tâche 0902-202220-action terminée sur action (code 0)
-snapshot: -rw-r--r-- 1 runner runner 16349060 Sep  2 20:23 bridge/state/snapshot.tar.gz
+--- vérif tunnel porte du trafic ---
+port 50552 répond ✓
+--- téléchargement TEMPORAIRE (16,9 Go) ---
+téléchargé : 16G en 167 s
+--- RAM pilote avant ---
+               total        used        free      shared  buff/cache   available
+Mem:            15Gi       1.0Gi       222Mi        43Mi        14Gi        14Gi
+
+===== INFÉRENCE FÉDÉRÉE — QUESTION : Quelle est la capitale de la France ? =====
+--- réponse ---
+/home/runner/work/llama.cpp/llama.cpp/ggml/src/ggml-rpc/ggml-rpc.cpp:354: Remote RPC server crashed or returned malformed response
+0.00.173.348 E recv failed (bytes_recv=0, size_to_recv=8)
+/home/runner/persist/bin/libggml-base.so.0(+0x1c97b)[0x7f8dab74d97b]
+/home/runner/persist/bin/libggml-base.so.0(ggml_print_backtrace+0x21f)[0x7f8dab74ddff]
+/home/runner/persist/bin/libggml-base.so.0(ggml_abort+0x152)[0x7f8dab74dfd2]
+/home/runner/persist/bin/libggml-rpc.so(_ZN14rpc_dispatcher5startERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE+0x3d7)[0x7f8dab6bd617]
+/home/runner/persist/bin/libggml-rpc.so(+0x1b912)[0x7f8dab6c3912]
+/home/runner/persist/bin/libggml-rpc.so(ggml_backend_rpc_add_server+0x1af)[0x7f8dab6c59af]
+/home/runner/persist/bin/libllama-common.so.0(+0x141996)[0x7f8daa341996]
+/home/runner/persist/bin/libllama-common.so.0(+0x153941)[0x7f8daa353941]
+/lib/x86_64-linux-gnu/libc.so.6(+0x2a1ca)[0x7f8dab02a1ca]
+/lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0x8b)[0x7f8dab02a28b]
+bin/llama-cli(+0x468d5)[0x5634cb0ae8d5]
+timeout: the monitored command dumped core
+Command terminated by signal 6
+MAX_RSS_KB=14836
+--- répartition RPC ---
+/home/runner/work/llama.cpp/llama.cpp/ggml/src/ggml-rpc/ggml-rpc.cpp:354: Remote RPC server crashed or returned malformed response
+/home/runner/persist/bin/libggml-rpc.so(_ZN14rpc_dispatcher5startERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE+0x3d7)[0x7f8dab6bd617]
+/home/runner/persist/bin/libggml-rpc.so(+0x1b912)[0x7f8dab6c3912]
+/home/runner/persist/bin/libggml-rpc.so(ggml_backend_rpc_add_server+0x1af)[0x7f8dab6c59af]
+--- performances ---
+MAX_RSS_KB=14836
+
+--- NETTOYAGE (rien de sauvegardé) ---
+cache pilote purgé ✓
+rpc tué ✓
+codespace arrêté ✓ (RAM effacée, disque intact)
+code=134 — FIN TEST FÉDÉRÉ
+----- FIN DE LA TÂCHE (code=0) -----
+[wrapper] tâche 0902-202407-action terminée sur action (code 0)
+snapshot: -rw-r--r-- 1 runner runner 16349060 Sep  2 20:27 bridge/state/snapshot.tar.gz
