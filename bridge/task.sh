@@ -13,7 +13,7 @@ Q="Quelle est la capitale de la France ?"
   fi
   [ "$ST" = "Available" ] || { echo "ERREUR: codespace pas démarré"; exit 1; }
 
-  echo "--- attente SSH du codespace (il annonce Available avant de servir) ---"
+  echo "--- attente SSH ---"
   OK=0
   for i in $(seq 1 12); do
     if gh codespace ssh -c "$CS" -- 'echo ready' >/dev/null 2>&1; then OK=1; echo "SSH prêt ($((i*10))s)"; break; fi
@@ -21,24 +21,32 @@ Q="Quelle est la capitale de la France ?"
   done
   [ "$OK" = "1" ] || { echo "ERREUR: ssh jamais prêt"; exit 1; }
 
-  echo "--- (re)lancement du rpc-server sur le nœud ---"
-  gh codespace ssh -c "$CS" -- 'pkill -f rpc-server 2>/dev/null; export LD_LIBRARY_PATH="$HOME/rpcbin:$LD_LIBRARY_PATH"; nohup $HOME/rpcbin/ggml-rpc-server --port 50052 >/tmp/rpc.log 2>&1 & sleep 3; ss -tln | grep 50052 && echo RPC_ECOUTE' 2>&1 | tail -2
-
-  echo "--- tunnel SSH Actions→Codespace (option A: ssh-flags natifs) ---"
+  echo "--- tunnel (méthode C : -L + commande sleep qui maintient) ---"
   pkill -f "150052" 2>/dev/null; sleep 1
-  nohup gh codespace ssh -c "$CS" -- -N -L 150052:127.0.0.1:50052 </dev/null >/tmp/tunnel.log 2>&1 &
+  nohup gh codespace ssh -c "$CS" -- -L 150052:127.0.0.1:50052 sleep 100000 </dev/null >/tmp/tunnel.log 2>&1 &
   TPID=$!
-  sleep 10
-  if ! ss -tln 2>/dev/null | grep -q 150052; then
-    echo "option A KO — option B: config OpenSSH + ssh -L"
+  TUN_OK=0
+  for i in $(seq 1 6); do
+    sleep 8
+    if ss -tln 2>/dev/null | grep -q 150052; then TUN_OK=1; break; fi
+  done
+  if [ "$TUN_OK" = "1" ]; then
+    echo "TUNNEL OK ✓ ($((SECONDS))s)"
+  else
+    echo "tunnel.log:"; cat /tmp/tunnel.log | tail -8
+    echo "--- repli : ssh natif via --config ---"
     gh codespace ssh --config -c "$CS" > /tmp/cs.config 2>/dev/null
-    HOST_ALIAS=$(grep -i "^Host " /tmp/cs.config | head -1 | awk '{print $2}')
-    echo "alias ssh: $HOST_ALIAS"
-    nohup ssh -F /tmp/cs.config -o StrictHostKeyChecking=no -N -L 150052:127.0.0.1:50052 "$HOST_ALIAS" </dev/null >/tmp/tunnel2.log 2>&1 &
+    HA=$(grep -i "^Host " /tmp/cs.config | head -1 | awk '{print $2}')
+    nohup ssh -F /tmp/cs.config -o StrictHostKeyChecking=no -L 150052:127.0.0.1:50052 "$HA" sleep 100000 </dev/null >/tmp/tunnel2.log 2>&1 &
     TPID=$!
     sleep 10
+    ss -tln 2>/dev/null | grep -q 150052 && { TUN_OK=1; echo "TUNNEL B OK ✓"; } || { echo "TUNNEL B KO:"; tail -5 /tmp/tunnel2.log; gh api -X POST "user/codespaces/$CS/stop" --silent; exit 1; }
   fi
-  if ss -tln 2>/dev/null | grep -q 150052; then echo "TUNNEL OK ✓"; else echo "TUNNEL KO:"; tail -4 /tmp/tunnel.log /tmp/tunnel2.log 2>/dev/null; exit 1; fi
+
+  echo "--- lancement rpc-server sur le nœud (motif [r]pc : pas d'auto-kill) ---"
+  gh codespace ssh -c "$CS" -- 'pkill -f "[r]pc-server" 2>/dev/null; sleep 1; export LD_LIBRARY_PATH="$HOME/rpcbin:$LD_LIBRARY_PATH"; nohup $HOME/rpcbin/ggml-rpc-server --port 50052 >/tmp/rpc.log 2>&1 & sleep 3; ss -tln | grep 50052 && echo RPC_ECOUTE' 2>&1 | tail -2
+  echo "--- vérif tunnel porte du trafic ---"
+  timeout 5 bash -c 'exec 3<>/dev/tcp/127.0.0.1/150052' 2>/dev/null && echo "port 150052 répond ✓" || echo "port 150052 muet ⚠️"
 
   cd "$HOME/persist" || exit 1
   export LD_LIBRARY_PATH="$PWD/bin:${LD_LIBRARY_PATH:-}"
@@ -47,24 +55,23 @@ Q="Quelle est la capitale de la France ?"
   if [ ! -s "$GGUF" ]; then
     echo "--- téléchargement TEMPORAIRE (16,9 Go) ---"
     T1=$(date +%s)
-    curl -sL --retry 2 --max-time 700 -o "$GGUF" "https://huggingface.co/unsloth/gemma-4-26B-A4B-it-GGUF/resolve/main/gemma-4-26B-A4B-it-UD-Q4_K_M.gguf"
+    curl -sL --retry 2 --max-time 650 -o "$GGUF" "https://huggingface.co/unsloth/gemma-4-26B-A4B-it-GGUF/resolve/main/gemma-4-26B-A4B-it-UD-Q4_K_M.gguf"
     echo "téléchargé : $(du -h "$GGUF" | cut -f1) en $(( $(date +%s) - T1 )) s"
   fi
   echo "--- RAM pilote avant ---"; free -h | head -2
   echo ""
   echo "===== INFÉRENCE FÉDÉRÉE — QUESTION : $Q ====="
-  RPCFLAGS="--rpc 127.0.0.1:150052 --tensor-split 1,1"
-  /usr/bin/time -f "MAX_RSS_KB=%M" timeout 720 bin/llama-cli -m "$GGUF" $RPCFLAGS -ngl 999 \
-    -st -p "$Q" -n 220 --temp 0 --threads 4 --simple-io </dev/null > /tmp/o.log 2>&1
+  /usr/bin/time -f "MAX_RSS_KB=%M" timeout 680 bin/llama-cli -m "$GGUF" --rpc 127.0.0.1:150052 --tensor-split 1,1 -ngl 999 \
+    -st -p "$Q" -n 200 --temp 0 --threads 4 --simple-io </dev/null > /tmp/o.log 2>&1
   RC=$?
-  if [ $RC -ne 0 ] && grep -qiE "invalid.*split|tensor.split" /tmp/o.log; then
-    echo "(split explicite refusé → nouvel essai avec répartition auto)"
-    /usr/bin/time -f "MAX_RSS_KB=%M" timeout 720 bin/llama-cli -m "$GGUF" --rpc 127.0.0.1:150052 -ngl 999 \
-      -st -p "$Q" -n 220 --temp 0 --threads 4 --simple-io </dev/null > /tmp/o.log 2>&1
+  if [ $RC -ne 0 ] && grep -qiE "invalid.*split|tensor.split|failed to connect" /tmp/o.log; then
+    echo "(repli : répartition automatique sans flag split)"
+    /usr/bin/time -f "MAX_RSS_KB=%M" timeout 680 bin/llama-cli -m "$GGUF" --rpc 127.0.0.1:150052 -ngl 999 \
+      -st -p "$Q" -n 200 --temp 0 --threads 4 --simple-io </dev/null > /tmp/o.log 2>&1
     RC=$?
   fi
   echo "--- réponse ---"
-  grep -avE "^> |estimate|tasks|system_info|print_info|load:|llama_|^[[:space:]]*$" /tmp/o.log | tail -24
+  grep -avE "^> |estimate|tasks|system_info|print_info|load:|llama_|^[[:space:]]*$" /tmp/o.log | tail -22
   echo "--- répartition RPC ---"
   grep -aiE "rpc|offload|split" /tmp/o.log | head -8
   echo "--- performances ---"
@@ -75,7 +82,7 @@ Q="Quelle est la capitale de la France ?"
   echo "--- NETTOYAGE (rien de sauvegardé) ---"
   kill $TPID 2>/dev/null
   rm -f "$GGUF" && echo "cache pilote purgé ✓"
-  gh codespace ssh -c "$CS" -- 'pkill -f rpc-server; echo "rpc tué ✓"' 2>&1 | tail -1
+  gh codespace ssh -c "$CS" -- 'pkill -f "[r]pc-server"; echo "rpc tué ✓"' 2>&1 | tail -1
   gh api -X POST "user/codespaces/$CS/stop" --silent && echo "codespace arrêté ✓ (RAM effacée, disque intact)"
   echo "code=$RC — FIN TEST FÉDÉRÉ"
 } 2>&1
