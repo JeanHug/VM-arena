@@ -33,7 +33,8 @@ fi
     T0=$(date +%s)
 
     # ---- 1) MOTEUR : llama.cpp (persistant dans ~/persist/bin) ----
-    if [ -x bin/llama-cli ]; then
+    export LD_LIBRARY_PATH="$PWD/bin${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+    if [ -x bin/llama-cli ] && bin/llama-cli --version >/dev/null 2>&1; then
       echo "[MOTEUR] déjà installé (persistant) : $(bin/llama-cli --version 2>&1 | head -1)"
     else
       echo "[MOTEUR] installation de llama.cpp (binaire précompilé ubuntu)…"
@@ -45,8 +46,8 @@ fi
       rm -rf /tmp/llamacpp && mkdir -p /tmp/llamacpp
       curl -sL --retry 3 --max-time 300 -o /tmp/llama.tar.gz "$URL"
       tar -xzf /tmp/llama.tar.gz -C /tmp/llamacpp
-      find /tmp/llamacpp -name 'llama-cli' -exec cp {} bin/ \;
-      chmod +x bin/llama-cli
+      find /tmp/llamacpp -type f \( -name 'llama-cli' -o -name 'lib*.so*' \) -exec cp -a {} bin/ \;
+      chmod +x bin/llama-cli 2>/dev/null
       echo "[MOTEUR] installé : $(bin/llama-cli --version 2>&1 | head -1)"
     fi
     echo ""
