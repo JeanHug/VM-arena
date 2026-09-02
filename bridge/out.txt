@@ -1,19 +1,20 @@
-===== TÂCHE 0902-202050-action → ACTION (exécution locale) =====
-# host: runnervmgx7h7 | date: 2026-09-02T20:21:00Z
+===== TÂCHE 0902-202220-action → ACTION (exécution locale) =====
+# host: runnervmgx7h7 | date: 2026-09-02T20:22:31Z
 # état persistant restauré : OUI — 31 fichiers, 40M
 
 ----- DÉBUT DE LA TÂCHE -----
 ===== [FEDERE 32 Go] GEMMA-4-26B-A4B UD-Q4_K_M (16,9 Go) sur 2 nœuds =====
-# host pilote: runnervmgx7h7 | date: 2026-09-02T20:21:00Z
-codespace nœud : laughing-guacamole-g4px7pr4v9xgfp4gr (Shutdown)
---- attente SSH du codespace (il annonce Available avant de servir) ---
+# host pilote: runnervmgx7h7 | date: 2026-09-02T20:22:31Z
+codespace nœud : laughing-guacamole-g4px7pr4v9xgfp4gr (Available)
+--- attente SSH ---
 SSH prêt (10s)
---- (re)lancement du rpc-server sur le nœud ---
+--- tunnel (méthode C : -L + commande sleep qui maintient) ---
+tunnel.log:
+Bad local forwarding specification '150052:127.0.0.1:50052'
 shell closed: exit status 255
---- tunnel SSH Actions→Codespace (option A: ssh-flags natifs) ---
-option A KO — option B: config OpenSSH + ssh -L
-alias ssh: cs.laughing-guacamole-g4px7pr4v9xgfp4gr.main
-TUNNEL KO:
+--- repli : ssh natif via --config ---
+TUNNEL B KO:
+Bad local forwarding specification '150052:127.0.0.1:50052'
 ----- FIN DE LA TÂCHE (code=1) -----
-[wrapper] tâche 0902-202050-action terminée sur action (code 0)
-snapshot: -rw-r--r-- 1 runner runner 16349060 Sep  2 20:21 bridge/state/snapshot.tar.gz
+[wrapper] tâche 0902-202220-action terminée sur action (code 0)
+snapshot: -rw-r--r-- 1 runner runner 16349060 Sep  2 20:23 bridge/state/snapshot.tar.gz
