@@ -43,8 +43,21 @@ Q="Quelle est la capitale de la France ?"
     ss -tln 2>/dev/null | grep -q 50552 && { TUN_OK=1; echo "TUNNEL B OK ✓"; } || { echo "TUNNEL B KO:"; tail -5 /tmp/tunnel2.log; gh api -X POST "user/codespaces/$CS/stop" --silent; exit 1; }
   fi
 
-  echo "--- lancement rpc-server sur le nœud (motif [r]pc : pas d'auto-kill) ---"
-  gh codespace ssh -c "$CS" -- 'pkill -f "[r]pc-server" 2>/dev/null; sleep 1; export LD_LIBRARY_PATH="$HOME/rpcbin:$LD_LIBRARY_PATH"; nohup $HOME/rpcbin/ggml-rpc-server --port 50052 >/tmp/rpc.log 2>&1 & sleep 3; ss -tln | grep 50052 && echo RPC_ECOUTE' 2>&1 | tail -2
+  echo "--- lancement rpc-server sur le nœud (script embarqué base64) ---"
+  cat > /tmp/start-rpc.sh <<'RPC'
+#!/bin/bash
+pkill -f "[r]pc-server" 2>/dev/null
+sleep 1
+export LD_LIBRARY_PATH="$HOME/rpcbin:$LD_LIBRARY_PATH"
+nohup "$HOME/rpcbin/ggml-rpc-server" --port 50052 >/tmp/rpc.log 2>&1 &
+sleep 3
+ss -tln | grep 50052 && echo RPC_ECOUTE
+exit 0
+RPC
+  B64=$(base64 -w0 /tmp/start-rpc.sh)
+  gh codespace ssh -c "$CS" -- "echo $B64 | base64 -d > /tmp/start-rpc.sh && bash /tmp/start-rpc.sh" 2>&1 | tail -2
+  echo "--- vérification indépendante (2e session SSH) ---"
+  gh codespace ssh -c "$CS" -- 'ss -tln | grep 50052 && echo VU_DEPU_L_EXTERIEUR || cat /tmp/rpc.log | tail -4' 2>&1 | tail -3
   echo "--- vérif tunnel porte du trafic ---"
   timeout 5 bash -c 'exec 3<>/dev/tcp/127.0.0.1/50552' 2>/dev/null && echo "port 50552 répond ✓" || echo "port 50552 muet ⚠️"
 
