@@ -1,29 +1,41 @@
 name: VM Bridge
+
 on:
   push:
     branches: ['arena/**']
     paths: ['bridge/cmd.txt']
   workflow_dispatch:
+
 permissions:
   contents: write
+
+concurrency:
+  group: vm-bridge
+  cancel-in-progress: false
+
 jobs:
   exec:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
+
       - name: Executer la commande recue
+        env:
+          CODESPACE_TOKEN: ${{ secrets.CODESPACE_TOKEN }}
         run: |
-          echo "===== VM-BRIDGE RESULT ====="
-          echo "# host: $(hostname)"
-          echo "# date: $(date -u +%FT%TZ)"
           bash bridge/cmd.txt 2>&1 || true
-          echo "===== FIN ====="
+
       - name: Publier le resultat
         if: always()
         run: |
           git config user.name "vm-bridge"
           git config user.email "vm-bridge@users.noreply.github.com"
-          git add -f bridge/out.txt
+          git add -f bridge/out.txt 2>/dev/null || true
           git commit -m "bridge: resultat" || exit 0
-          git push origin HEAD
+          for i in 1 2 3 4 5; do
+            if git push origin HEAD:arena/01a061e4-vm-arena; then exit 0; fi
+            git pull --rebase origin arena/01a061e4-vm-arena || true
+            sleep 5
+          done
+          exit 1
