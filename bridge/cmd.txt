@@ -46,7 +46,7 @@ fi
       rm -rf /tmp/llamacpp && mkdir -p /tmp/llamacpp
       curl -sL --retry 3 --max-time 300 -o /tmp/llama.tar.gz "$URL"
       tar -xzf /tmp/llama.tar.gz -C /tmp/llamacpp
-      find /tmp/llamacpp -type f \( -name 'llama-cli' -o -name 'lib*.so*' \) -exec cp -a {} bin/ \;
+      find /tmp/llamacpp \( -type f -o -type l \) \( -name 'llama-cli' -o -name 'lib*.so*' \) -exec cp -a {} bin/ \;
       chmod +x bin/llama-cli 2>/dev/null
       echo "[MOTEUR] installé : $(bin/llama-cli --version 2>&1 | head -1)"
     fi
