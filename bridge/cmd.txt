@@ -1,10 +1,16 @@
-echo "marqueur-persistence-XYZ-2026" > /tmp/preuve-persistence.txt
 {
-  echo "===== RUN 1 : creation du marqueur ====="
+  echo "===== RUN 2 : le marqueur a-t-il survécu ? ====="
   echo "hostname : $(hostname)"
   echo "uptime   : $(uptime -p) (boot: $(uptime -s))"
-  echo "fichier cree :"
-  ls -la /tmp/preuve-persistence.txt
-  cat /tmp/preuve-persistence.txt
+  echo ""
+  if [ -f /tmp/preuve-persistence.txt ]; then
+    echo ">>> FICHIER TROUVÉ : la VM est continue (état conservé)"
+    cat /tmp/preuve-persistence.txt
+  else
+    echo ">>> FICHIER ABSENT : la VM a été réinitialisée (nouvelle machine)"
+  fi
+  echo ""
+  echo "--- autres traces du run 1 ? ---"
+  ls /tmp/ | head -20
 } > bridge/out.txt 2>&1
 exit 0
