@@ -1,15 +1,15 @@
-===== TÂCHE 0902-202818-action → ACTION (exécution locale) =====
-# host: runnervmejwal | date: 2026-09-02T20:28:27Z
+===== TÂCHE 0902-203301-action → ACTION (exécution locale) =====
+# host: runnervmgx7h7 | date: 2026-09-02T20:33:14Z
 # état persistant restauré : OUI — 31 fichiers, 40M
 
 ----- DÉBUT DE LA TÂCHE -----
 ===== [FEDERE 32 Go] GEMMA-4-26B-A4B UD-Q4_K_M (16,9 Go) sur 2 nœuds =====
-# host pilote: runnervmejwal | date: 2026-09-02T20:28:27Z
+# host pilote: runnervmgx7h7 | date: 2026-09-02T20:33:14Z
 codespace nœud : laughing-guacamole-g4px7pr4v9xgfp4gr (Shutdown)
 --- attente SSH ---
 SSH prêt (10s)
 --- tunnel (méthode C : -L + commande sleep qui maintient) ---
-TUNNEL OK ✓ (26s)
+TUNNEL OK ✓ (28s)
 --- lancement rpc-server sur le nœud (script embarqué base64) ---
 LISTEN 0      1          127.0.0.1:50052      0.0.0.0:*          
 RPC_ECOUTE
@@ -19,30 +19,15 @@ VU_DEPU_L_EXTERIEUR
 --- vérif tunnel porte du trafic ---
 port 50552 répond ✓
 --- téléchargement TEMPORAIRE (16,9 Go) ---
-téléchargé : 16G en 135 s
+téléchargé : 16G en 148 s
 --- RAM pilote avant ---
                total        used        free      shared  buff/cache   available
-Mem:            15Gi       1.0Gi       176Mi        43Mi        14Gi        14Gi
+Mem:            15Gi       1.0Gi       239Mi        43Mi        14Gi        14Gi
 
 ===== INFÉRENCE FÉDÉRÉE — QUESTION : Quelle est la capitale de la France ? =====
---- réponse ---
-0.48.271.643 E alloc_tensor_range: failed to allocate RPC0[127.0.0.1:50552] buffer of size 16931717056
-0.49.993.610 E cmn  common_init_: failed to load model '/home/runner/gguf-cache/gemma-4-26B-A4B-it-UD-Q4_K_M.gguf'
-0.49.994.692 E srv    load_model: failed to load model, '/home/runner/gguf-cache/gemma-4-26B-A4B-it-UD-Q4_K_M.gguf'
-Loading model... Error: the server exited before becoming ready
-Command exited with non-zero status 1
-MAX_RSS_KB=14978656
---- répartition RPC ---
-0.48.271.643 E alloc_tensor_range: failed to allocate RPC0[127.0.0.1:50552] buffer of size 16931717056
-0.49.992.828 E llama_model_load: error loading model: unable to allocate RPC0[127.0.0.1:50552] buffer
---- performances ---
-MAX_RSS_KB=14978656
-
---- NETTOYAGE (rien de sauvegardé) ---
-cache pilote purgé ✓
-rpc tué ✓
-codespace arrêté ✓ (RAM effacée, disque intact)
-code=1 — FIN TEST FÉDÉRÉ
------ FIN DE LA TÂCHE (code=0) -----
-[wrapper] tâche 0902-202818-action terminée sur action (code 0)
-snapshot: -rw-r--r-- 1 runner runner 16346895 Sep  2 20:32 bridge/state/snapshot.tar.gz
+--- RAM du nœud distant avant chargement ---
+               total        used        free      shared  buff/cache   available
+Mem:            15Gi       1.4Gi       6.3Gi        60Mi       8.4Gi        14Gi
+--- tentative 1 : -ngl 15 (15/30 couches au nœud distant) ---
+[wrapper] tâche 0902-203301-action terminée sur action (code 124)
+snapshot: -rw-r--r-- 1 runner runner 16349060 Sep  2 20:58 bridge/state/snapshot.tar.gz
