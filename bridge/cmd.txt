@@ -54,7 +54,9 @@ fi
 ) > "bridge/out.txt" 2>&1
 
 # ---------- PHASE 3 : SNAPSHOT + PUBLICATION ----------
+mkdir -p bridge/state
 tar -czf "$SNAP" -C "$WS" . 2>/dev/null
+echo "snapshot: $(ls -la "$SNAP" 2>/dev/null || echo 'ECHEC CREATION')" >> bridge/out.txt
 git config user.name "vm-bridge"
 git config user.email "vm-bridge@users.noreply.github.com"
 git add -f bridge/out.txt "$SNAP"
