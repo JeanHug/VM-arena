@@ -1,56 +1,32 @@
-===== TÂCHE 0902-200134-action → ACTION (exécution locale) =====
-# host: runnervmgx7h7 | date: 2026-09-02T20:01:44Z
+===== TÂCHE 0902-201707-codespace → CODESPACE =====
+# host Actions: runnervmgx7h7 | date: 2026-09-02T20:17:19Z
 # état persistant restauré : OUI — 31 fichiers, 40M
 
------ DÉBUT DE LA TÂCHE -----
-===== [ACTION] TEST BIG MODEL : Gemma-4-12B Q4_K_M (7,4 Go, dense) =====
-# host: runnervmgx7h7 | RAM totale: 15Gi
-moteur : version: 0.3.0-dev (build 10760, commit 0f3a71be1)
-fichier retenu : gemma-4-12b-it-Q4_K_M.gguf
-telechargement (chargement TEMPORAIRE, non sauvegarde)...
-telecharge : 6.7G en 261 s
---- RAM avant inference ---
+→ codespace : laughing-guacamole-g4px7pr4v9xgfp4gr (4 cores, 16 GB RAM, 32 GB storage) — état : Shutdown
+→ démarrage…
+✅ codespace démarré
+
+----- DÉBUT DE LA TÂCHE SUR LE CODESPACE -----
+===== [CODESPACE] SETUP NOEUD RPC (build b10760 calé sur le pilote) =====
+# host: codespaces-95b38f | date: 2026-09-02T20:17:39Z
+téléchargement llama.cpp b10760 (exactement le build du pilote)…
+ggml-rpc-server
+libggml-base.so
+libggml-base.so.0
+libggml-base.so.0.22.0
+libggml-cpu-alderlake.so
+libggml-cpu-cannonlake.so
+binaire rpc : /home/codespace/rpcbin/ggml-rpc-server
+--- processus ---
+547 /home/codespace/rpcbin/ggml-rpc-server --port 50052
+--- port 50052 ---
+LISTEN 0      1          127.0.0.1:50052      0.0.0.0:*          
+--- RAM libre pour les couches du modèle ---
                total        used        free      shared  buff/cache   available
-Mem:            15Gi       991Mi       4.8Gi        44Mi        10Gi        14Gi
-
-===== QUESTION : Quelle est la capitale de la France ? =====
---- reponse du modele ---
-▄▄ ▄▄
-██ ██
-██ ██  ▀▀█▄ ███▄███▄  ▀▀█▄    ▄████ ████▄ ████▄
-██ ██ ▄█▀██ ██ ██ ██ ▄█▀██    ██    ██ ██ ██ ██
-██ ██ ▀█▄██ ██ ██ ██ ▀█▄██ ██ ▀████ ████▀ ████▀
-                                    ██    ██
-                                    ▀▀    ▀▀
-build      : b10760-0f3a71be1
-model      : /home/runner/gguf-cache/gemma-4-12b-it-Q4_K_M.gguf
-ftype      : Q4_K - Medium
-modalities : text
-available commands:
-  /exit or Ctrl+C     stop or exit
-  /regen              regenerate the last response
-  /clear              clear the chat history
-  /read <file>        add a text file
-  /glob <pattern>     add text files using globbing pattern
-[Start thinking]
-*   Question: "Quelle est la capitale de la France ?" (What is the capital of France?)
-    *   Language: French.
-    *   Subject: Geography (Capital of France).
-    *   The capital of France is Paris.
-    *   Direct answer: "La capitale de la France est Paris."
-    *   Is it accurate? Yes.
-    *   Is it in the correct language? Yes.
-[End thinking]
-La capitale de la France est **Paris**.
-[ Prompt: 13.1 t/s | Generation: 3.2 t/s ]
-Exiting...
-MAX_RSS_KB=15267312
-
---- performances ---
-[ Prompt: 13.1 t/s | Generation: 3.2 t/s ]
-RAM max du modele : 0.0 Go
-VERDICT: 🐢 3.2 t/s <= 10 — sous le seuil
-(cache purge — modele non sauvegarde, code=0)
+Mem:            15Gi       1.3Gi       8.0Gi        58Mi       6.8Gi        14Gi
+===== NOEUD RPC PRÊT — il doit rester allumé pour le test fédéré =====
 ----- FIN DE LA TÂCHE (code=0) -----
-[wrapper] tâche 0902-200134-action terminée sur action (code 0)
-snapshot: -rw-r--r-- 1 runner runner 16349060 Sep  2 20:06 bridge/state/snapshot.tar.gz
+
+✅ codespace arrêté — disque conservé (politique : stop)
+[wrapper] tâche 0902-201707-codespace terminée sur codespace (code 0)
+snapshot: -rw-r--r-- 1 runner runner 16349060 Sep  2 20:17 bridge/state/snapshot.tar.gz
