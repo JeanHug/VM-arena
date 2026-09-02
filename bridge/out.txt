@@ -1,32 +1,11 @@
-<<<<<<< HEAD
-===== TÂCHE 0902-183218-codespace → CODESPACE =====
-# host Actions: runnervmgx7h7 | date: 2026-09-02T18:33:46Z
-=======
-===== TÂCHE 0902-183339-codespace → CODESPACE =====
-# host Actions: runnervmgx7h7 | date: 2026-09-02T18:34:10Z
->>>>>>> 44a945c (bridge: résultat 0902-183339-codespace (codespace))
+===== TÂCHE 0902-183500-action → ACTION (exécution locale) =====
+# host: runnervmejwal | date: 2026-09-02T18:35:10Z
 # état persistant restauré : OUI — 31 fichiers, 40M
 
-→ codespace : laughing-guacamole-g4px7pr4v9xgfp4gr (4 cores, 16 GB RAM, 32 GB storage) — état : Available
-
------ DÉBUT DE LA TÂCHE SUR LE CODESPACE -----
-=== CODESPACE CONTACTÉ PAR VMCTL ===
-codespaces-95b38f
-CPU: 4 cœurs
-               total        used        free      shared  buff/cache   available
-<<<<<<< HEAD
-Mem:            15Gi       1.3Gi       6.4Gi        60Mi       8.3Gi        14Gi
-=======
-Mem:            15Gi       1.4Gi       6.4Gi        60Mi       8.3Gi        14Gi
->>>>>>> 44a945c (bridge: résultat 0902-183339-codespace (codespace))
---- marqueur du test précédent (persistance disque) ---
-VM-ARENA est passée ici : Wed Sep  2 17:41:40 UTC 2026
------ FIN DE LA TÂCHE (code=0) -----
-→ codespace laissé en l'état (politique : stop)
-<<<<<<< HEAD
-[wrapper] tâche 0902-183218-codespace terminée sur codespace (code 0)
-snapshot: -rw-r--r-- 1 runner runner 16349060 Sep  2 18:33 bridge/state/snapshot.tar.gz
-=======
-[wrapper] tâche 0902-183339-codespace terminée sur codespace (code 0)
-snapshot: -rw-r--r-- 1 runner runner 16349060 Sep  2 18:34 bridge/state/snapshot.tar.gz
->>>>>>> 44a945c (bridge: résultat 0902-183339-codespace (codespace))
+----- DÉBUT DE LA TÂCHE -----
+=== SYSTÈME DE CONTRÔLE OPÉRATIONNEL ===
+wrapper embarque la résolution -X theirs : oui/non
+0
+----- FIN DE LA TÂCHE (code=1) -----
+[wrapper] tâche 0902-183500-action terminée sur action (code 0)
+snapshot: -rw-r--r-- 1 runner runner 16346895 Sep  2 18:35 bridge/state/snapshot.tar.gz
