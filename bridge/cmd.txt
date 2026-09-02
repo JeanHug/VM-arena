@@ -66,10 +66,10 @@ cd "$HOME/persist" || exit 1
     sleep 10
     ST=$(gh api "user/codespaces/$CS" --jq .state 2>/dev/null)
     echo "   [$((i*10))s] état : $ST"
-    [ "$ST" = "Running" ] && break
+    [ "$ST" = "Available" ] && break
   done
-  if [ "$ST" = "Running" ]; then
-    echo "✅ CODESPACE EN MARCHE"
+  if [ "$ST" = "Available" ]; then
+    echo "✅ CODESPACE EN MARCHE (état API : Available)"
   else
     echo "❌ le codespace n'a pas démarré"
     exit 0
