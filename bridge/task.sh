@@ -1,1 +1,1 @@
-echo "=== CODESPACE CONTACTÉ PAR VMCTL ==="; hostname; echo "CPU: $(nproc) cœurs"; free -h | head -2; echo "--- marqueur écrit par le test précédent (persistance disque) ---"; cat ~/BONJOUR_VM_ARENA.txt 2>/dev/null || echo "(absent)"
+echo "=== CODESPACE CONTACTÉ PAR VMCTL ==="; hostname; echo "CPU: $(nproc) cœurs"; free -h | head -2; echo "--- marqueur du test précédent (persistance disque) ---"; cat ~/BONJOUR_VM_ARENA.txt 2>/dev/null || echo "(absent)"
