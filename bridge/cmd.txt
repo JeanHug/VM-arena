@@ -80,9 +80,9 @@ Quelle est la capitale de la France ?<end_of_turn>
 <start_of_turn>model
 "
   rm -f /tmp/llama-out.log
-  printf 'Quelle est la capitale de la France ?\n' | timeout 240 bin/llama-cli \
-    -m "$HOME/gguf-cache/model.gguf" -cnv --simple-io -n 200 --temp 0 --threads 4 \
-    > /tmp/llama-out.log 2>&1
+  timeout 240 bin/llama-cli -m "$HOME/gguf-cache/model.gguf" \
+    -st -p "Quelle est la capitale de la France ?" \
+    -n 200 --temp 0 --threads 4 --simple-io </dev/null > /tmp/llama-out.log 2>&1
   RC=$?
   echo "--- réponse du modèle ---"
   grep -avE "^> |^\r?$|estimate|tasks|device|system_info|print_info|load:|llama_" /tmp/llama-out.log | tail -25
