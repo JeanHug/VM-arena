@@ -1,19 +1,55 @@
-===== TÂCHE 0902-194815-action → ACTION (exécution locale) =====
-# host: runnervmgx7h7 | date: 2026-09-02T19:48:28Z
+===== TÂCHE 0902-194852-action → ACTION (exécution locale) =====
+# host: runnervmejwal | date: 2026-09-02T19:49:03Z
 # état persistant restauré : OUI — 31 fichiers, 40M
 
 ----- DÉBUT DE LA TÂCHE -----
 ===== [ACTION] TEST BIG MODEL : Gemma-4-26B-A4B UD-IQ4_XS (13,9 Go) =====
-# host: runnervmgx7h7 | RAM totale: 15Gi
+# host: runnervmejwal | RAM totale: 15Gi
 moteur : version: 0.3.0-dev (build 10760, commit 0f3a71be1)
-/home/runner/work/VM-arena/VM-arena/bridge/task.sh: line 26: IQ4_XS: command not found
-/home/runner/work/VM-arena/VM-arena/bridge/task.sh: line 26: UD-Q3_K_M: command not found
-/home/runner/work/VM-arena/VM-arena/bridge/task.sh: line 33: $'IQ3_M.split(\'|\')\n    for p in prefs:\n        for f in files:\n            if p in f:\n                print(f); sys.exit()\n    print(files[0] if files else \'\')\nexcept Exception:\n    pass': command not found
-  File "<string>", line 6
-    prefs=UD-IQ4_XS
-                   ^
-SyntaxError: expected 'except' or 'finally' block
-ERREUR: aucun gguf trouve
------ FIN DE LA TÂCHE (code=1) -----
-[wrapper] tâche 0902-194815-action terminée sur action (code 0)
-snapshot: -rw-r--r-- 1 runner runner 16349060 Sep  2 19:48 bridge/state/snapshot.tar.gz
+fichier retenu : gemma-4-26B-A4B-it-UD-IQ4_XS.gguf
+telechargement (chargement TEMPORAIRE, non sauvegarde)...
+telecharge : 13G en 309 s
+--- RAM avant inference ---
+               total        used        free      shared  buff/cache   available
+Mem:            15Gi       972Mi       268Mi        44Mi        14Gi        14Gi
+
+===== QUESTION : Quelle est la capitale de la France ? =====
+--- reponse du modele ---
+Loading model... 
+▄▄ ▄▄
+██ ██
+██ ██  ▀▀█▄ ███▄███▄  ▀▀█▄    ▄████ ████▄ ████▄
+██ ██ ▄█▀██ ██ ██ ██ ▄█▀██    ██    ██ ██ ██ ██
+██ ██ ▀█▄██ ██ ██ ██ ▀█▄██ ██ ▀████ ████▀ ████▀
+                                    ██    ██
+                                    ▀▀    ▀▀
+build      : b10760-0f3a71be1
+model      : /home/runner/gguf-cache/gemma-4-26B-A4B-it-UD-IQ4_XS.gguf
+ftype      : IQ4_XS - 4.25 bpw
+modalities : text
+available commands:
+  /exit or Ctrl+C     stop or exit
+  /regen              regenerate the last response
+  /clear              clear the chat history
+  /read <file>        add a text file
+  /glob <pattern>     add text files using globbing pattern
+[Start thinking]
+*   Language: French ("Quelle est la capitale de la France ?").
+    *   Question: "What is the capital of France?"
+    *   Fact: The capital of France is Paris.
+    *   Direct answer: "La capitale de la France est Paris." or simply "Paris."
+    *   "La capitale de la France est Paris."
+[End thinking]
+La capitale de la France est **Paris**.
+[ Prompt: 4.0 t/s | Generation: 4.7 t/s ]
+Exiting...
+MAX_RSS_KB=15304584
+
+--- performances ---
+[ Prompt: 4.0 t/s | Generation: 4.7 t/s ]
+RAM max du modele : 0.0 Go
+VERDICT: 🐢 4.7 t/s <= 10 — sous le seuil
+(cache purge — modele non sauvegarde, code=0)
+----- FIN DE LA TÂCHE (code=0) -----
+[wrapper] tâche 0902-194852-action terminée sur action (code 0)
+snapshot: -rw-r--r-- 1 runner runner 16346895 Sep  2 19:55 bridge/state/snapshot.tar.gz
