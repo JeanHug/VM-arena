@@ -1,14 +1,13 @@
 ===== TÂCHE 0902-183118-codespace → CODESPACE =====
-# host Actions: runnervmgx7h7 | date: 2026-09-02T18:31:29Z
+# host Actions: runnervmgx7h7 | date: 2026-09-02T18:32:24Z
 # état persistant restauré : OUI — 31 fichiers, 40M
 
-→ codespace : laughing-guacamole-g4px7pr4v9xgfp4gr (4 cores, 16 GB RAM, 32 GB storage) — état : Shutdown
-→ démarrage…
-✅ codespace démarré
+→ codespace : laughing-guacamole-g4px7pr4v9xgfp4gr (4 cores, 16 GB RAM, 32 GB storage) — état : Available
 
 ----- DÉBUT DE LA TÂCHE SUR LE CODESPACE -----
-/usr/bin/scp: stat local "bridge/task.sh": No such file or directory
-shell closed: exit status 255
+/usr/bin/scp: dest open "'/tmp/vm-task.sh'": No such file or directory
+/usr/bin/scp: failed to upload file /home/runner/work/VM-arena/VM-arena/bridge/task.sh to '/tmp/vm-task.sh'
+shell closed: exit status 1
 ❌ échec de copie de la tâche
 [wrapper] tâche 0902-183118-codespace terminée sur codespace (code 0)
-snapshot: -rw-r--r-- 1 runner runner 16349060 Sep  2 18:31 bridge/state/snapshot.tar.gz
+snapshot: -rw-r--r-- 1 runner runner 16349060 Sep  2 18:32 bridge/state/snapshot.tar.gz
