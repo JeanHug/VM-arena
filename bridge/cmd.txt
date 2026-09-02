@@ -126,7 +126,7 @@ git add -f bridge/out.txt "$SNAP"
 git commit -m "bridge: résultat $TASK_ID ($TARGET)" || true
 for i in 1 2 3 4 5; do
   if git push origin HEAD:arena/01a061e4-vm-arena; then break; fi
-  git pull --rebase origin arena/01a061e4-vm-arena || true
+  git pull --rebase -X theirs origin arena/01a061e4-vm-arena || true
   sleep 5
 done
 exit 0
