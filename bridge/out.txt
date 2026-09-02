@@ -1,17 +1,37 @@
-===== VM PERSISTANTE — RUN =====
+===== VM PERSISTANTE — INSTALLATION GEMMA 4 E2B + TEST =====
 # host: runnervmgx7h7
-# date: 2026-09-02T12:43:51Z
-# espace persistant: /home/runner/persist
+# date: 2026-09-02T12:46:29Z
 # état restauré : OUI — 2 fichiers, 12K
 
->>> PREUVE : run n°2 sur cet état persistant
+[MOTEUR] installation de llama.cpp (binaire précompilé ubuntu)…
+[MOTEUR] téléchargement : 
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+  File "/usr/lib/python3.12/zipfile/__init__.py", line 1347, in __init__
+    self.fp = io.open(file, filemode)
+              ^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/tmp/llama.zip'
+find: ‘/tmp/llamacpp’: No such file or directory
+chmod: cannot access 'bin/llama-cli': No such file or directory
+[MOTEUR] installé : bridge/cmd.txt: line 51: bin/llama-cli: No such file or directory
 
---- contenu de ~/persist (persistant) ---
-total 16
-drwxr-xr-x  2 runner runner 4096 Sep  2 12:43 .
-drwxr-x--- 12 runner runner 4096 Sep  2 12:43 ..
--rw-r--r--  1 runner runner    2 Sep  2 12:43 .compteur
--rw-r--r--  1 runner runner   49 Sep  2 12:43 bonjour.txt
+[POIDS] recherche du GGUF Gemma 4 E2B (unsloth, Apache 2.0)…
+[POIDS] dépôt testé : unsloth/gemma-4-E2B-it-GGUF
+[POIDS] retenu : unsloth/gemma-4-E2B-it-GGUF/gemma-4-E2B-it-Q4_K_M.gguf
+[POIDS] téléchargement : https://huggingface.co/unsloth/gemma-4-E2B-it-GGUF/resolve/main/gemma-4-E2B-it-Q4_K_M.gguf
+[POIDS] taille : 2962 Mo en 121 s
 
-fichier bonjour.txt : salut depuis la VM persistante (écrit au run 2)
-snapshot: -rw-r--r-- 1 runner runner 229 Sep  2 12:43 bridge/state/snapshot.tar.gz
+--- RAM avant inférence ---
+               total        used        free      shared  buff/cache   available
+Mem:            15Gi       993Mi       8.7Gi        45Mi       6.3Gi        14Gi
+
+===== QUESTION : Quelle est la capitale de la France ? =====
+bridge/cmd.txt: line 100: bin/llama-cli: No such file or directory
+===== FIN DE RÉPONSE =====
+
+[TEMPS] chargement+génération : 0 s | total session : 121 s
+
+--- RAM après ---
+               total        used        free      shared  buff/cache   available
+Mem:            15Gi       993Mi       8.7Gi        45Mi       6.3Gi        14Gi
+snapshot: -rw-r--r-- 1 runner runner 244 Sep  2 12:48 bridge/state/snapshot.tar.gz
