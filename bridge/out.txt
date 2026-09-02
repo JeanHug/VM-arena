@@ -1,11 +1,10 @@
-===== TÂCHE 0902-183500-action → ACTION (exécution locale) =====
-# host: runnervmgx7h7 | date: 2026-09-02T18:35:46Z
+===== TÂCHE 0902-183540-action → ACTION (exécution locale) =====
+# host: runnervmejwal | date: 2026-09-02T18:36:05Z
 # état persistant restauré : OUI — 31 fichiers, 40M
 
 ----- DÉBUT DE LA TÂCHE -----
-=== SYSTÈME DE CONTRÔLE OPÉRATIONNEL ===
-wrapper embarque la résolution -X theirs : oui/non
 1
+✅ wrapper blindé contre les conflits
 ----- FIN DE LA TÂCHE (code=0) -----
-[wrapper] tâche 0902-183500-action terminée sur action (code 0)
-snapshot: -rw-r--r-- 1 runner runner 16349060 Sep  2 18:35 bridge/state/snapshot.tar.gz
+[wrapper] tâche 0902-183540-action terminée sur action (code 0)
+snapshot: -rw-r--r-- 1 runner runner 16346895 Sep  2 18:36 bridge/state/snapshot.tar.gz
