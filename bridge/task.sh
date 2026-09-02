@@ -1,40 +1,57 @@
-{
-  echo "===== [CODESPACE] INSTALLATION DEFINITIVE GEMMA 4 E2B ====="
-  echo "# host: $(hostname) | date: $(date -u +%FT%TZ)"
-  mkdir -p ~/bin ~/models
-  export LD_LIBRARY_PATH="$HOME/bin:${LD_LIBRARY_PATH:-}"
-  if ~/bin/llama-cli --version >/dev/null 2>&1; then
-    echo "[MOTEUR] deja present : $(~/bin/llama-cli --version 2>&1 | head -1)"
-  else
-    echo "[MOTEUR] telechargement llama.cpp (build nocturne ubuntu)..."
-    TAG=$(curl -sL --max-time 30 "https://api.github.com/repos/ggml-org/llama.cpp/releases?per_page=1" | grep -o '"tag_name": *"[^"]*"' | head -1 | cut -d'"' -f4)
-    echo "[MOTEUR] build : $TAG"
-    curl -sL --retry 2 --max-time 240 -o /tmp/llama.tar.gz "https://github.com/ggml-org/llama.cpp/releases/download/$TAG/llama-$TAG-bin-ubuntu-x64.tar.gz"
-    rm -rf /tmp/llamacpp; mkdir -p /tmp/llamacpp
-    tar -xzf /tmp/llama.tar.gz -C /tmp/llamacpp
-    find /tmp/llamacpp \( -type f -o -type l \) \( -name 'llama-cli' -o -name 'lib*.so*' \) -exec cp -a {} ~/bin/ \;
-    chmod +x ~/bin/llama-cli
-    echo "[MOTEUR] installe : $(~/bin/llama-cli --version 2>&1 | head -1)"
-  fi
-  M="$HOME/models/gemma-4-E2B-it-Q4_K_M.gguf"
-  if [ -s "$M" ]; then
-    echo "[POIDS] deja presents : $(du -h "$M" | cut -f1)"
-  else
-    echo "[POIDS] telechargement gemma-4-E2B-it Q4_K_M (~2,9 Go)..."
-    T1=$(date +%s)
-    curl -sL --retry 3 --max-time 900 --speed-limit 20000 --speed-time 60 -o "$M" \
-      "https://huggingface.co/unsloth/gemma-4-E2B-it-GGUF/resolve/main/gemma-4-E2B-it-Q4_K_M.gguf"
-    T2=$(date +%s)
-    echo "[POIDS] $(du -h "$M" | cut -f1) telecharges en $((T2-T1)) s"
-  fi
-  echo ""
-  echo "===== TEST : Quelle est la capitale de la France ? ====="
-  timeout 240 ~/bin/llama-cli -m "$M" -st -p "Quelle est la capitale de la France ?" -n 180 --temp 0 --threads 4 --simple-io </dev/null 2>&1 | grep -avE "^> |estimate|tasks|device|system_info|print_info|load:|llama_|^[[:space:]]*$" | tail -22
-  echo ""
-  echo "--- disque du codespace (persistance definitive) ---"
-  df -h / | tail -1
-  echo "bin     : $(du -sh ~/bin | cut -f1)"
-  echo "models  : $(du -sh ~/models | cut -f1)"
-  echo "===== INSTALLATION DEFINITIVE TERMINEE ====="
-} 2>&1
+Q="Quelle est la capitale de la France ?"
+echo "===== [ACTION] TEST BIG MODEL : Gemma-4-26B-A4B UD-IQ4_XS (13,9 Go) ====="
+echo "# host: $(hostname) | RAM totale: $(free -h | awk '/Mem:/{print $2}')"
+cd "$HOME/persist" || exit 1
+export LD_LIBRARY_PATH="$PWD/bin:${LD_LIBRARY_PATH:-}"
+if ! bin/llama-cli --version >/dev/null 2>&1; then echo "ERREUR moteur absent"; exit 1; fi
+echo "moteur : $(bin/llama-cli --version 2>&1 | head -1)"
+REPO="unsloth/gemma-4-26B-A4B-it-GGUF"
+FILE=$(curl -sL --max-time 30 "https://huggingface.co/api/models/$REPO" | python3 -c "
+import json,sys
+try:
+    d=json.load(sys.stdin)
+    files=[s['rfilename'] for s in d.get('siblings',[]) if s['rfilename'].endswith('.gguf')]
+    prefs="UD-IQ4_XS|IQ4_XS|UD-Q3_K_M|IQ3_M".split('|')
+    for p in prefs:
+        for f in files:
+            if p in f:
+                print(f); sys.exit()
+    print(files[0] if files else '')
+except Exception:
+    pass")
+[ -z "$FILE" ] && { echo "ERREUR: aucun gguf trouve"; exit 1; }
+echo "fichier retenu : $FILE"
+GGUF="$HOME/gguf-cache/$FILE"
+mkdir -p "$HOME/gguf-cache"
+if [ -s "$GGUF" ]; then
+  echo "deja en cache (sans re-telechargement)"
+else
+  echo "telechargement (chargement TEMPORAIRE, non sauvegarde)..."
+  T1=$(date +%s)
+  curl -sL --retry 2 --max-time 900 --speed-limit 20000 --speed-time 60 -o "$GGUF" "https://huggingface.co/$REPO/resolve/main/$FILE"
+  T2=$(date +%s)
+  echo "telecharge : $(du -h "$GGUF" | cut -f1) en $((T2-T1)) s"
+fi
+echo "--- RAM avant inference ---"
+free -h | head -2
+echo ""
+echo "===== QUESTION : $Q ====="
+if [ -x /usr/bin/time ]; then
+  /usr/bin/time -f "MAX_RSS_KB=%M" timeout 700 bin/llama-cli -m "$GGUF" -st -p "$Q" -n 220 --temp 0 --threads 4 --simple-io </dev/null > /tmp/o.log 2>&1
+else
+  timeout 700 bin/llama-cli -m "$GGUF" -st -p "$Q" -n 220 --temp 0 --threads 4 --simple-io </dev/null > /tmp/o.log 2>&1
+fi
+RC=$?
+echo "--- reponse du modele ---"
+grep -avE "^> |estimate|tasks|device|system_info|print_info|load:|llama_|prompt cache|^[[:space:]]*$" /tmp/o.log | tail -30
+echo ""
+echo "--- performances ---"
+grep -E "Prompt:|Generation:" /tmp/o.log | tail -2
+grep "MAX_RSS" /tmp/o.log | tail -1 | awk '{printf "RAM max du modele : %.1f Go\n", $2/1048576}'
+GEN=$(grep -oP 'Generation: \K[0-9.]+' /tmp/o.log | head -1)
+if [ -n "$GEN" ]; then
+  awk -v g="$GEN" 'BEGIN{ if (g+0>10.0) printf "VERDICT: ⚡ %.1f t/s > 10 — SEUIL ATTEINT, chargement temporaire valide, rien n est sauvegarde\n", g; else printf "VERDICT: 🐢 %.1f t/s <= 10 — sous le seuil\n", g }'
+fi
+rm -f "$GGUF"
+echo "(cache purge — modele non sauvegarde, code=$RC)"
 exit 0
