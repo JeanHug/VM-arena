@@ -1,0 +1,14 @@
+echo "===== SPECS DU CODESPACE ====="
+echo "--- hostname ---"
+hostname
+echo "--- CPU ---"
+nproc
+lscpu | grep -E "Model name|^CPU\(s\)|Core|Socket"
+echo "--- RAM ---"
+free -h
+echo "--- Disque ---"
+df -h /
+echo "--- OS ---"
+cat /etc/os-release | head -2
+uname -a
+echo "===== FIN SPECS ====="
