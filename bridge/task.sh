@@ -74,12 +74,16 @@ RPC
   echo "--- RAM pilote avant ---"; free -h | head -2
   echo ""
   echo "===== INFÉRENCE FÉDÉRÉE — QUESTION : $Q ====="
-  /usr/bin/time -f "MAX_RSS_KB=%M" timeout 680 bin/llama-cli -m "$GGUF" --rpc 127.0.0.1:50552 --tensor-split 1,1 -ngl 999 \
+  echo "--- RAM du nœud distant avant chargement ---"
+  gh codespace ssh -c "$CS" -- 'free -h | head -2' 2>&1 | tail -2
+  echo "--- tentative 1 : -ngl 15 (15/30 couches au nœud distant) ---"
+  /usr/bin/time -f "MAX_RSS_KB=%M" timeout 680 bin/llama-cli -m "$GGUF" --rpc 127.0.0.1:50552 -ngl 15 \
     -st -p "$Q" -n 200 --temp 0 --threads 4 --simple-io </dev/null > /tmp/o.log 2>&1
   RC=$?
-  if [ $RC -ne 0 ] && grep -qiE "invalid.*split|tensor.split|failed to connect" /tmp/o.log; then
-    echo "(repli : répartition automatique sans flag split)"
-    /usr/bin/time -f "MAX_RSS_KB=%M" timeout 680 bin/llama-cli -m "$GGUF" --rpc 127.0.0.1:50552 -ngl 999 \
+  if [ $RC -ne 0 ] && grep -qiE "failed to allocate|out of memory|crashed" /tmp/o.log; then
+    echo "--- tentative 2 : -ngl 12 (charge réduite côté distant) ---"
+    gh codespace ssh -c "$CS" -- 'pkill -f "[r]pc-server"; sleep 1; export LD_LIBRARY_PATH="$HOME/rpcbin:$LD_LIBRARY_PATH"; nohup "$HOME/rpcbin/ggml-rpc-server" --port 50052 >/tmp/rpc.log 2>&1 & sleep 2; echo relance_ok' >/dev/null 2>&1
+    /usr/bin/time -f "MAX_RSS_KB=%M" timeout 680 bin/llama-cli -m "$GGUF" --rpc 127.0.0.1:50552 -ngl 12 \
       -st -p "$Q" -n 200 --temp 0 --threads 4 --simple-io </dev/null > /tmp/o.log 2>&1
     RC=$?
   fi
