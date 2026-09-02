@@ -1,6 +1,6 @@
 ===== VM PERSISTANTE — RUN =====
 # host: runnervmgx7h7
-# date: 2026-09-02T12:42:33Z
+# date: 2026-09-02T12:42:55Z
 # espace persistant: /home/runner/persist
 # état restauré : NON — première session (aucun snapshot présent)
 
