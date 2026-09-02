@@ -1,1 +1,15 @@
-bridge/cmd.txt: line 27: cd: /workspace: No such file or directory
+===== VM PERSISTANTE — RUN =====
+# host: runnervmgx7h7
+# date: 2026-09-02T12:42:33Z
+# espace persistant: /home/runner/persist
+# état restauré : NON — première session (aucun snapshot présent)
+
+>>> PREUVE : run n°1 sur cet état persistant
+
+--- contenu de ~/persist (persistant) ---
+total 12
+drwxr-xr-x  2 runner runner 4096 Sep  2 12:42 .
+drwxr-x--- 12 runner runner 4096 Sep  2 12:42 ..
+-rw-r--r--  1 runner runner    2 Sep  2 12:42 .compteur
+
+fichier bonjour.txt : salut depuis la VM persistante (écrit au run 1)
