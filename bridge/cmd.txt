@@ -1,16 +1,16 @@
 # ============================================================
-# bridge/cmd.txt — VM PERSISTANTE
-#   L'état du dossier /workspace survit entre les runs :
-#   Phase 1 : restauration de bridge/state/snapshot.tar.gz → /workspace
+# bridge/cmd.txt — VM PERSISTANTE (v2)
+#   L'état du dossier ~/persist survit entre les runs :
+#   Phase 1 : restauration de bridge/state/snapshot.tar.gz → ~/persist
 #   Phase 2 : ZONE COMMANDES UTILISATEUR (à éditer)
-#   Phase 3 : snapshot de /workspace → commit → push (out.txt + état)
+#   Phase 3 : snapshot de ~/persist → commit → push (out.txt + état)
 #
-#   ⚠ Repo public : ne rien mettre de confidentiel dans /workspace.
-#   ⚠ Garder /workspace raisonnable (< ~100 Mo) : le snapshot passe par Git.
+#   ⚠ Repo public : ne rien mettre de confidentiel dans ~/persist.
+#   ⚠ Garder ~/persist raisonnable (< ~100 Mo) : le snapshot passe par Git.
 # ============================================================
 
 set +e
-WS="/workspace"
+WS="$HOME/persist"
 SNAP="bridge/state/snapshot.tar.gz"
 
 # ---------- PHASE 1 : RESTAURATION DE L'ÉTAT ----------
@@ -29,6 +29,7 @@ fi
     echo "===== VM PERSISTANTE — RUN ====="
     echo "# host: $(hostname)"
     echo "# date: $(date -u +%FT%TZ)"
+    echo "# espace persistant: $WS"
     echo "# état restauré : $RESTORED"
     echo ""
 
@@ -42,11 +43,10 @@ fi
     fi
     echo ">>> PREUVE : run n°$N sur cet état persistant"
     echo ""
-    echo "--- contenu de /workspace (persistant) ---"
+    echo "--- contenu de ~/persist (persistant) ---"
     ls -la "$WS"
     echo ""
-    echo "--- fichier .compteur : $(cat .compteur) ---"
-    echo "salut depuis la VM persistante" > bonjour.txt
+    echo "salut depuis la VM persistante (écrit au run $N)" > bonjour.txt
     echo "fichier bonjour.txt : $(cat bonjour.txt)"
 
     # <<< FIN COMMANDES UTILISATEUR >>>
