@@ -1,22 +1,66 @@
-echo "===== IDENTITE VM ====="
-hostname
-echo ""
-echo "===== OS ====="
-cat /etc/os-release | head -2
-uname -a
-echo ""
-echo "===== CPU ====="
-nproc
-lscpu | grep -E "Model name|^CPU\(s\)|Core|Socket|NUMA"
-echo ""
-echo "===== RAM ====="
-free -h
-grep MemTotal /proc/meminfo
-echo ""
-echo "===== DISQUE ====="
-df -h /
-echo ""
-echo "===== RESEAU (IP publique) ====="
-curl -s --max-time 10 https://api.ipify.org && echo ""
-echo ""
-echo "===== FIN SPECS ====="
+# ============================================================
+# bridge/cmd.txt — NOUVEAU: auto-réparation complète dans la VM
+#   1. répare le detached HEAD laissé par actions/checkout
+#   2. exécute la charge utile en capturant tout dans bridge/out.txt
+#   3. publie elle-même le résultat sur la branche
+# Le workflow n'est plus qu'un déclencheur muet.
+# ============================================================
+
+# 1) attache HEAD à une branche nommée (sinon le push final échoue)
+git checkout -B arena/01a061e4-vm-arena || true
+
+# 2) exécution + capture intégrale de la sortie
+(
+  set +e
+  {
+    echo "===== VM-BRIDGE RESULT ====="
+    echo "# host: $(hostname)"
+    echo "# date: $(date -u +%FT%TZ)"
+
+    echo ""
+    echo "===== IDENTITE VM ====="
+    hostname
+
+    echo ""
+    echo "===== OS ====="
+    cat /etc/os-release | head -2
+    uname -a
+
+    echo ""
+    echo "===== CPU ====="
+    nproc
+    lscpu | grep -E "Model name|^CPU\(s\)|Core|Socket|NUMA"
+
+    echo ""
+    echo "===== RAM ====="
+    free -h
+    grep MemTotal /proc/meminfo
+
+    echo ""
+    echo "===== DISQUE ====="
+    df -h /
+
+    echo ""
+    echo "===== RESEAU (IP publique) ====="
+    curl -s --max-time 10 https://api.ipify.org && echo ""
+
+    echo ""
+    echo "===== FIN ====="
+  }
+) > bridge/out.txt 2>&1
+
+# 3) publication du résultat par la VM elle-même
+git config user.name "vm-bridge"
+git config user.email "vm-bridge@users.noreply.github.com"
+git add -f bridge/out.txt
+git commit -m "bridge: resultat d'execution" || true
+for i in 1 2 3 4 5; do
+  if git push origin HEAD:arena/01a061e4-vm-arena; then
+    echo "PUBLICATION OK"
+    break
+  fi
+  git pull --rebase origin arena/01a061e4-vm-arena || true
+  sleep 5
+done
+
+exit 0
