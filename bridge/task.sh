@@ -76,17 +76,14 @@ RPC
   echo "===== INFÉRENCE FÉDÉRÉE — QUESTION : $Q ====="
   echo "--- RAM du nœud distant avant chargement ---"
   gh codespace ssh -c "$CS" -- 'free -h | head -2' 2>&1 | tail -2
-  echo "--- tentative 1 : -ngl 15 (15/30 couches au nœud distant) ---"
-  /usr/bin/time -f "MAX_RSS_KB=%M" timeout 680 bin/llama-cli -m "$GGUF" --rpc 127.0.0.1:50552 -ngl 15 \
-    -st -p "$Q" -n 200 --temp 0 --threads 4 --simple-io </dev/null > /tmp/o.log 2>&1
+  echo "--- chargement fédéré -ngl 15 (19 min de budget, log temps réel) ---"
+  echo "[$(date -u +%T)] début inference"
+  timeout 1150 bin/llama-cli -m "$GGUF" --rpc 127.0.0.1:50552 -ngl 15 \
+    -st -p "$Q" -n 100 --temp 0 --threads 4 --simple-io </dev/null > /tmp/o.log 2>&1
   RC=$?
-  if [ $RC -ne 0 ] && grep -qiE "failed to allocate|out of memory|crashed" /tmp/o.log; then
-    echo "--- tentative 2 : -ngl 12 (charge réduite côté distant) ---"
-    gh codespace ssh -c "$CS" -- 'pkill -f "[r]pc-server"; sleep 1; export LD_LIBRARY_PATH="$HOME/rpcbin:$LD_LIBRARY_PATH"; nohup "$HOME/rpcbin/ggml-rpc-server" --port 50052 >/tmp/rpc.log 2>&1 & sleep 2; echo relance_ok' >/dev/null 2>&1
-    /usr/bin/time -f "MAX_RSS_KB=%M" timeout 680 bin/llama-cli -m "$GGUF" --rpc 127.0.0.1:50552 -ngl 12 \
-      -st -p "$Q" -n 200 --temp 0 --threads 4 --simple-io </dev/null > /tmp/o.log 2>&1
-    RC=$?
-  fi
+  echo "[$(date -u +%T)] fin inference (code=$RC)"
+  echo "--- où le chargement s'est arrêté (dernières lignes brutes) ---"
+  tr '\r' '\n' < /tmp/o.log | grep -aE "load|rpc|Layers|CPU|RPC|buffers" | tail -12
   echo "--- réponse ---"
   grep -avE "^> |estimate|tasks|system_info|print_info|load:|llama_|^[[:space:]]*$" /tmp/o.log | tail -22
   echo "--- répartition RPC ---"
