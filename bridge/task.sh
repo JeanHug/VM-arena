@@ -1,1 +1,1 @@
-echo "=== CODESPACE CONTACTÉ PAR VMCTL ==="; hostname; echo "CPU: $(nproc) cœurs"; free -h | head -2; echo "--- marqueur du test précédent (persistance disque) ---"; cat ~/BONJOUR_VM_ARENA.txt 2>/dev/null || echo "(absent)"
+echo "=== SYSTÈME DE CONTRÔLE OPÉRATIONNEL ==="; echo "wrapper embarque la résolution -X theirs : oui/non"; grep -c "X theirs" /home/user/../home/runner/work/VM-arena/VM-arena/bridge/cmd.txt 2>/dev/null || grep -c "X theirs" "$GITHUB_WORKSPACE/bridge/cmd.txt"
