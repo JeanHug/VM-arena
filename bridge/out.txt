@@ -1,15 +1,15 @@
-===== TÂCHE 0902-203301-action → ACTION (exécution locale) =====
-# host: runnervmgx7h7 | date: 2026-09-02T20:33:14Z
+===== TÂCHE 0902-205901-action → ACTION (exécution locale) =====
+# host: runnervmgx7h7 | date: 2026-09-02T20:59:12Z
 # état persistant restauré : OUI — 31 fichiers, 40M
 
 ----- DÉBUT DE LA TÂCHE -----
 ===== [FEDERE 32 Go] GEMMA-4-26B-A4B UD-Q4_K_M (16,9 Go) sur 2 nœuds =====
-# host pilote: runnervmgx7h7 | date: 2026-09-02T20:33:14Z
-codespace nœud : laughing-guacamole-g4px7pr4v9xgfp4gr (Shutdown)
+# host pilote: runnervmgx7h7 | date: 2026-09-02T20:59:12Z
+codespace nœud : laughing-guacamole-g4px7pr4v9xgfp4gr (Available)
 --- attente SSH ---
 SSH prêt (10s)
 --- tunnel (méthode C : -L + commande sleep qui maintient) ---
-TUNNEL OK ✓ (28s)
+TUNNEL OK ✓ (15s)
 --- lancement rpc-server sur le nœud (script embarqué base64) ---
 LISTEN 0      1          127.0.0.1:50052      0.0.0.0:*          
 RPC_ECOUTE
@@ -19,15 +19,16 @@ VU_DEPU_L_EXTERIEUR
 --- vérif tunnel porte du trafic ---
 port 50552 répond ✓
 --- téléchargement TEMPORAIRE (16,9 Go) ---
-téléchargé : 16G en 148 s
+téléchargé : 16G en 368 s
 --- RAM pilote avant ---
                total        used        free      shared  buff/cache   available
-Mem:            15Gi       1.0Gi       239Mi        43Mi        14Gi        14Gi
+Mem:            15Gi       1.0Gi       258Mi        46Mi        14Gi        14Gi
 
 ===== INFÉRENCE FÉDÉRÉE — QUESTION : Quelle est la capitale de la France ? =====
 --- RAM du nœud distant avant chargement ---
                total        used        free      shared  buff/cache   available
-Mem:            15Gi       1.4Gi       6.3Gi        60Mi       8.4Gi        14Gi
---- tentative 1 : -ngl 15 (15/30 couches au nœud distant) ---
-[wrapper] tâche 0902-203301-action terminée sur action (code 124)
-snapshot: -rw-r--r-- 1 runner runner 16349060 Sep  2 20:58 bridge/state/snapshot.tar.gz
+Mem:            15Gi       1.6Gi       8.8Gi        63Mi       5.6Gi        14Gi
+--- chargement fédéré -ngl 15 (19 min de budget, log temps réel) ---
+[21:05:50] début inference
+[wrapper] tâche 0902-205901-action terminée sur action (code 124)
+snapshot: -rw-r--r-- 1 runner runner 16349060 Sep  2 21:24 bridge/state/snapshot.tar.gz
