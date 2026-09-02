@@ -1,6 +1,6 @@
 ===== PONT CODESPACE — TEST D'ACCÈS COMPLET =====
 # host Actions: runnervmgx7h7
-# date: 2026-09-02T17:36:29Z
+# date: 2026-09-02T17:37:30Z
 # état restauré : OUI — 31 fichiers, 40M
 
 ✅ secret CODESPACE_TOKEN présent (40 caractères — valeur masquée)
@@ -9,41 +9,29 @@
 gh version 2.98.0 (2026-08-20)
 
 --- 2) liste des codespaces du repo ---
-Unknown JSON field: "machine"
-Available fields:
-  createdAt
-  displayName
-  gitStatus
-  lastUsedAt
-  machineName
-  name
-  owner
-  repository
-  state
-  vscsTarget
+laughing-guacamole-g4px7pr4v9xgfp4gr | Shutdown | standardLinux32gb
 → codespace sélectionné : laughing-guacamole-g4px7pr4v9xgfp4gr
-→ état actuel : Shutdown
 
---- 3) démarrage du codespace (30-90 s)… ---
-unknown shorthand flag: 'c' in -c
-
-Usage:  gh codespace [flags]
-
-Available commands:
-  code
-  cp
-  create
-  delete
-  edit
-  jupyter
-  list
-  logs
-  ports
-  rebuild
-  ssh
-  stop
-  view
-
-❌ échec du démarrage
+--- 3) démarrage via API REST (polling jusqu'à 3 min)… ---
+✅ requête de démarrage envoyée
+   [10s] état : Available
+   [20s] état : Available
+   [30s] état : Available
+   [40s] état : Available
+   [50s] état : Available
+   [60s] état : Available
+   [70s] état : Available
+   [80s] état : Available
+   [90s] état : Available
+   [100s] état : Available
+   [110s] état : Available
+   [120s] état : Available
+   [130s] état : Available
+   [140s] état : Available
+   [150s] état : Available
+   [160s] état : Available
+   [170s] état : Available
+   [180s] état : Available
+❌ le codespace n'a pas démarré
 zone utilisateur terminée (code 0)
-snapshot: -rw-r--r-- 1 runner runner 16349060 Sep  2 17:36 bridge/state/snapshot.tar.gz
+snapshot: -rw-r--r-- 1 runner runner 16349060 Sep  2 17:40 bridge/state/snapshot.tar.gz
