@@ -1,24 +1,120 @@
 ===== VM PERSISTANTE — GEMMA 4 E2B : QUESTION TEST =====
 # host: runnervmgx7h7
-# début: 2026-09-02T13:11:30Z
+# début: 2026-09-02T13:14:58Z
 # état restauré : OUI — 31 fichiers, 40M
 
-[13:11:30] [MOTEUR] installation…
-[13:11:35] [MOTEUR] build : b10760
-[13:11:35] [MOTEUR] installé : version: 0.3.0-dev (build 10760, commit 0f3a71be1)
+[13:14:59] [MOTEUR] déjà installé (PERSISTANT ✓) : version: 0.3.0-dev (build 10760, commit 0f3a71be1)
 
-[13:11:35] [POIDS] récupération du GGUF (unsloth, Apache 2.0)…
-[13:11:35] [POIDS] fichier : gemma-4-E2B-it-Q4_K_M.gguf
-[13:14:06] [POIDS] 2962 Mo téléchargés en 151 s
+[13:14:59] [POIDS] récupération du GGUF (unsloth, Apache 2.0)…
+[13:14:59] [POIDS] fichier : gemma-4-E2B-it-Q4_K_M.gguf
+[13:18:36] [POIDS] 2962 Mo téléchargés en 217 s
 
-[13:14:06] [TEST] lancement de l'inférence (timeout interne 5 min)…
+[13:18:36] [TEST] lancement de l'inférence (timeout interne 5 min)…
 
 ===== QUESTION : Quelle est la capitale de la France ? =====
-error: invalid argument: -no-cnv
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+>
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+>
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+
+Exiting...
 
 --- sortie complète finale (fin de génération) ---
+Quelle est la capitale de la France ?<end_of_turn>
+<start_of_turn>model
 
-===== FIN DE RÉPONSE (code=1) =====
-[13:14:16] fin — 2026-09-02T13:14:16Z
+
+--
+1.  **Analyze the Request:** The user asked in French: "Quelle est la capitale de la France ?" (What is the capital of France?).
+2.  **Determine the Answer:** The capital of France is Paris.
+3.  **Formulate the Response (in French, as the query was in French):** La capitale de la France est Paris.
+4.  **Review Identity/Constraints:** I am Gemma
+
+[ Prompt: 39.2 t/s | Generation: 17.7 t/s ]
+
+===== FIN DE RÉPONSE (code=124) =====
+[13:24:19] fin — 2026-09-02T13:24:19Z
 zone utilisateur terminée (code 0)
-snapshot: -rw-r--r-- 1 runner runner 16349060 Sep  2 13:14 bridge/state/snapshot.tar.gz
+snapshot: -rw-r--r-- 1 runner runner 16349060 Sep  2 13:24 bridge/state/snapshot.tar.gz
