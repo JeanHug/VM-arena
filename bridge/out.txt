@@ -1,55 +1,32 @@
-===== TÂCHE 0902-194852-action → ACTION (exécution locale) =====
-# host: runnervmejwal | date: 2026-09-02T19:49:03Z
+===== TÂCHE 0902-195533-action → ACTION (exécution locale) =====
+# host: runnervmgx7h7 | date: 2026-09-02T19:55:44Z
 # état persistant restauré : OUI — 31 fichiers, 40M
 
 ----- DÉBUT DE LA TÂCHE -----
-===== [ACTION] TEST BIG MODEL : Gemma-4-26B-A4B UD-IQ4_XS (13,9 Go) =====
-# host: runnervmejwal | RAM totale: 15Gi
+===== [ACTION] TEST BIG MODEL : Qwen3.8-27B Q3 (13,8 Go, dense) =====
+# host: runnervmgx7h7 | RAM totale: 15Gi
 moteur : version: 0.3.0-dev (build 10760, commit 0f3a71be1)
-fichier retenu : gemma-4-26B-A4B-it-UD-IQ4_XS.gguf
+fichier retenu : BF16/Qwen3.8-27B-BF16-00001-of-00002.gguf
 telechargement (chargement TEMPORAIRE, non sauvegarde)...
-telecharge : 13G en 309 s
+du: cannot access '/home/runner/gguf-cache/BF16/Qwen3.8-27B-BF16-00001-of-00002.gguf': No such file or directory
+telecharge :  en 2 s
 --- RAM avant inference ---
                total        used        free      shared  buff/cache   available
-Mem:            15Gi       972Mi       268Mi        44Mi        14Gi        14Gi
+Mem:            15Gi       1.1Gi        12Gi        42Mi       2.5Gi        14Gi
 
 ===== QUESTION : Quelle est la capitale de la France ? =====
 --- reponse du modele ---
-Loading model... 
-▄▄ ▄▄
-██ ██
-██ ██  ▀▀█▄ ███▄███▄  ▀▀█▄    ▄████ ████▄ ████▄
-██ ██ ▄█▀██ ██ ██ ██ ▄█▀██    ██    ██ ██ ██ ██
-██ ██ ▀█▄██ ██ ██ ██ ▀█▄██ ██ ▀████ ████▀ ████▀
-                                    ██    ██
-                                    ▀▀    ▀▀
-build      : b10760-0f3a71be1
-model      : /home/runner/gguf-cache/gemma-4-26B-A4B-it-UD-IQ4_XS.gguf
-ftype      : IQ4_XS - 4.25 bpw
-modalities : text
-available commands:
-  /exit or Ctrl+C     stop or exit
-  /regen              regenerate the last response
-  /clear              clear the chat history
-  /read <file>        add a text file
-  /glob <pattern>     add text files using globbing pattern
-[Start thinking]
-*   Language: French ("Quelle est la capitale de la France ?").
-    *   Question: "What is the capital of France?"
-    *   Fact: The capital of France is Paris.
-    *   Direct answer: "La capitale de la France est Paris." or simply "Paris."
-    *   "La capitale de la France est Paris."
-[End thinking]
-La capitale de la France est **Paris**.
-[ Prompt: 4.0 t/s | Generation: 4.7 t/s ]
-Exiting...
-MAX_RSS_KB=15304584
+0.00.011.661 E gguf_init_from_file: failed to open GGUF file '/home/runner/gguf-cache/BF16/Qwen3.8-27B-BF16-00001-of-00002.gguf' (No such file or directory)
+0.00.011.792 E gguf_init_from_file: failed to open GGUF file '/home/runner/gguf-cache/BF16/Qwen3.8-27B-BF16-00001-of-00002.gguf' (No such file or directory)
+0.00.011.800 E cmn  common_init_: failed to load model '/home/runner/gguf-cache/BF16/Qwen3.8-27B-BF16-00001-of-00002.gguf'
+0.00.011.804 E srv    load_model: failed to load model, '/home/runner/gguf-cache/BF16/Qwen3.8-27B-BF16-00001-of-00002.gguf'
+Loading model... Error: the server exited before becoming ready
+Command exited with non-zero status 1
+MAX_RSS_KB=19092
 
 --- performances ---
-[ Prompt: 4.0 t/s | Generation: 4.7 t/s ]
 RAM max du modele : 0.0 Go
-VERDICT: 🐢 4.7 t/s <= 10 — sous le seuil
-(cache purge — modele non sauvegarde, code=0)
+(cache purge — modele non sauvegarde, code=1)
 ----- FIN DE LA TÂCHE (code=0) -----
-[wrapper] tâche 0902-194852-action terminée sur action (code 0)
-snapshot: -rw-r--r-- 1 runner runner 16346895 Sep  2 19:55 bridge/state/snapshot.tar.gz
+[wrapper] tâche 0902-195533-action terminée sur action (code 0)
+snapshot: -rw-r--r-- 1 runner runner 16349060 Sep  2 19:55 bridge/state/snapshot.tar.gz
