@@ -6,12 +6,13 @@ export LD_LIBRARY_PATH="$PWD/bin:${LD_LIBRARY_PATH:-}"
 if ! bin/llama-cli --version >/dev/null 2>&1; then echo "ERREUR moteur absent"; exit 1; fi
 echo "moteur : $(bin/llama-cli --version 2>&1 | head -1)"
 REPO="unsloth/gemma-4-26B-A4B-it-GGUF"
-FILE=$(curl -sL --max-time 30 "https://huggingface.co/api/models/$REPO" | python3 -c "
-import json,sys
+PREFS="UD-IQ4_XS|IQ4_XS|UD-Q3_K_M|IQ3_M"
+FILE=$(curl -sL --max-time 30 "https://huggingface.co/api/models/$REPO" | PREFS="$PREFS" python3 -c "
+import json,sys,os
 try:
     d=json.load(sys.stdin)
     files=[s['rfilename'] for s in d.get('siblings',[]) if s['rfilename'].endswith('.gguf')]
-    prefs="UD-IQ4_XS|IQ4_XS|UD-Q3_K_M|IQ3_M".split('|')
+    prefs=os.environ.get('PREFS','').split('|')
     for p in prefs:
         for f in files:
             if p in f:
