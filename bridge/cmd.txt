@@ -1,7 +1,7 @@
 # ============================================================
 # bridge/cmd.txt — VM PERSISTANTE
 #   Phase 1 : restauration de bridge/state/snapshot.tar.gz → ~/persist
-#   Phase 2 : ZONE COMMANDES UTILISATEUR (à éditer)
+#   Phase 2 : ZONE COMMANDES UTILISATEUR (garde de 12 min max)
 #   Phase 3 : snapshot de ~/persist → commit → push (out.txt + état)
 # ============================================================
 
@@ -19,97 +19,94 @@ else
 fi
 
 # ---------- PHASE 2 : ZONE COMMANDES UTILISATEUR ----------
-(
-  cd "$WS" || exit 1
-  {
-    echo "===== VM PERSISTANTE — INSTALLATION GEMMA 4 E2B + TEST ====="
-    echo "# host: $(hostname)"
-    echo "# date: $(date -u +%FT%TZ)"
-    echo "# état restauré : $RESTORED"
-    echo ""
+cat > /tmp/user-zone.sh <<'USERZONE'
+cd "$HOME/persist" || exit 1
+export LD_LIBRARY_PATH="$PWD/bin${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+STAMP() { date -u +"%H:%M:%S"; }
 
-    # >>> DEBUT COMMANDES UTILISATEUR <<<
+{
+  echo "===== VM PERSISTANTE — GEMMA 4 E2B : QUESTION TEST ====="
+  echo "# host: $(hostname)"
+  echo "# début: $(date -u +%FT%TZ)"
+  echo "# état restauré : $RESTORED"
+  echo ""
 
-    T0=$(date +%s)
+  # ---- 1) MOTEUR llama.cpp (persistant) ----
+  if [ -x bin/llama-cli ] && bin/llama-cli --version >/dev/null 2>&1; then
+    echo "[$(STAMP)] [MOTEUR] déjà installé (PERSISTANT ✓) : $(bin/llama-cli --version 2>&1 | head -1)"
+  else
+    echo "[$(STAMP)] [MOTEUR] installation…"
+    mkdir -p bin
+    TAG=$(curl -sL --max-time 30 "https://api.github.com/repos/ggml-org/llama.cpp/releases?per_page=1" | grep -o '"tag_name": *"[^"]*"' | head -1 | cut -d'"' -f4)
+    echo "[$(STAMP)] [MOTEUR] build : $TAG"
+    curl -sL --retry 2 --max-time 240 -o /tmp/llama.tar.gz "https://github.com/ggml-org/llama.cpp/releases/download/$TAG/llama-$TAG-bin-ubuntu-x64.tar.gz"
+    rm -rf /tmp/llamacpp && mkdir -p /tmp/llamacpp
+    tar -xzf /tmp/llama.tar.gz -C /tmp/llamacpp
+    find /tmp/llamacpp \( -type f -o -type l \) \( -name 'llama-cli' -o -name 'lib*.so*' \) -exec cp -a {} bin/ \;
+    chmod +x bin/llama-cli 2>/dev/null
+    echo "[$(STAMP)] [MOTEUR] installé : $(bin/llama-cli --version 2>&1 | head -1)"
+  fi
+  echo ""
 
-    # ---- 1) MOTEUR : llama.cpp (persistant dans ~/persist/bin) ----
-    export LD_LIBRARY_PATH="$PWD/bin${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
-    if [ -x bin/llama-cli ] && bin/llama-cli --version >/dev/null 2>&1; then
-      echo "[MOTEUR] déjà installé (persistant) : $(bin/llama-cli --version 2>&1 | head -1)"
-    else
-      echo "[MOTEUR] installation de llama.cpp (binaire précompilé ubuntu)…"
-      mkdir -p bin
-      TAG=$(curl -sL --max-time 30 "https://api.github.com/repos/ggml-org/llama.cpp/releases?per_page=1" | grep -o '"tag_name": *"[^"]*"' | head -1 | cut -d'"' -f4)
-      echo "[MOTEUR] build nocturne : $TAG"
-      URL="https://github.com/ggml-org/llama.cpp/releases/download/$TAG/llama-$TAG-bin-ubuntu-x64.tar.gz"
-      echo "[MOTEUR] téléchargement : $URL"
-      rm -rf /tmp/llamacpp && mkdir -p /tmp/llamacpp
-      curl -sL --retry 3 --max-time 300 -o /tmp/llama.tar.gz "$URL"
-      tar -xzf /tmp/llama.tar.gz -C /tmp/llamacpp
-      find /tmp/llamacpp \( -type f -o -type l \) \( -name 'llama-cli' -o -name 'lib*.so*' \) -exec cp -a {} bin/ \;
-      chmod +x bin/llama-cli 2>/dev/null
-      echo "[MOTEUR] installé : $(bin/llama-cli --version 2>&1 | head -1)"
-    fi
-    echo ""
-
-    # ---- 2) POIDS : Gemma 4 E2B (GGUF, re-téléchargés à chaque session) ----
-    echo "[POIDS] recherche du GGUF Gemma 4 E2B (unsloth, Apache 2.0)…"
-    GGUF_FILE=""
-    for REPO in unsloth/gemma-4-E2B-it-GGUF AtomicChat/gemma-4-E2B-it-assistant-GGUF; do
-      LIST=$(curl -sL --max-time 30 "https://huggingface.co/api/models/$REPO")
-      echo "[POIDS] dépôt testé : $REPO"
-      GGUF_FILE=$(echo "$LIST" | python3 -c "
+  # ---- 2) POIDS Gemma 4 E2B ----
+  echo "[$(STAMP)] [POIDS] récupération du GGUF (unsloth, Apache 2.0)…"
+  GGUF_FILE=$(curl -sL --max-time 30 "https://huggingface.co/api/models/unsloth/gemma-4-E2B-it-GGUF" | python3 -c "
 import json,sys
 try:
     d=json.load(sys.stdin)
     files=[s['rfilename'] for s in d.get('siblings',[]) if s['rfilename'].endswith('.gguf')]
     for f in files:
         if 'Q4_K_M' in f: print(f); break
-    else:
-        print(files[0] if files else '')
-except Exception:
-    pass
-")
-      if [ -n "$GGUF_FILE" ]; then echo "[POIDS] retenu : $REPO/$GGUF_FILE"; break; fi
-    done
-    if [ -z "$GGUF_FILE" ]; then
-      echo "[POIDS] ERREUR : aucun GGUF trouvé — abandon"
-      exit 1
-    fi
-    mkdir -p "$HOME/gguf-cache"
-    DL_URL="https://huggingface.co/$REPO/resolve/main/$GGUF_FILE"
-    echo "[POIDS] téléchargement : $DL_URL"
-    T1=$(date +%s)
-    curl -sL --retry 3 --max-time 600 -o "$HOME/gguf-cache/model.gguf" "$DL_URL"
-    T2=$(date +%s)
-    SIZE=$(stat -c %s "$HOME/gguf-cache/model.gguf" 2>/dev/null || echo 0)
-    echo "[POIDS] taille : $((SIZE/1024/1024)) Mo en $((T2-T1)) s"
-    echo ""
-    echo "--- RAM avant inférence ---"
-    free -h | head -2
-    echo ""
+    else: print(files[0] if files else '')
+except Exception: pass")
+  [ -z "$GGUF_FILE" ] && GGUF_FILE="gemma-4-E2B-it-Q4_K_M.gguf"
+  echo "[$(STAMP)] [POIDS] fichier : $GGUF_FILE"
+  mkdir -p "$HOME/gguf-cache"
+  T1=$(date +%s)
+  curl -sL --retry 2 --max-time 420 --speed-limit 50000 --speed-time 30 \
+    -o "$HOME/gguf-cache/model.gguf" \
+    "https://huggingface.co/unsloth/gemma-4-E2B-it-GGUF/resolve/main/$GGUF_FILE"
+  T2=$(date +%s)
+  SIZE=$(stat -c %s "$HOME/gguf-cache/model.gguf" 2>/dev/null || echo 0)
+  echo "[$(STAMP)] [POIDS] $((SIZE/1024/1024)) Mo téléchargés en $((T2-T1)) s"
+  echo ""
 
-    # ---- 3) TEST : « Quelle est la capitale de la France ? » ----
-    echo "===== QUESTION : Quelle est la capitale de la France ? ====="
-    PROMPT="<start_of_turn>user
+  # ---- 3) INFÉRENCE : « Quelle est la capitale de la France ? » ----
+  echo "[$(STAMP)] [TEST] lancement de l'inférence (timeout interne 5 min)…"
+  echo ""
+  echo "===== QUESTION : Quelle est la capitale de la France ? ====="
+  PROMPT="<start_of_turn>user
 Quelle est la capitale de la France ?<end_of_turn>
 <start_of_turn>model
 "
-    bin/llama-cli --help 2>&1 | grep -q "no-cnv" && NOCNV="-no-cnv" || NOCNV=""
-    T3=$(date +%s)
-    bin/llama-cli -m "$HOME/gguf-cache/model.gguf" $NOCNV \
-      -p "$PROMPT" -n 120 --temp 0 --simple-io 2>&1 | tail -25
-    T4=$(date +%s)
-    echo "===== FIN DE RÉPONSE ====="
-    echo ""
-    echo "[TEMPS] chargement+génération : $((T4-T3)) s | total session : $(( $(date +%s) - T0 )) s"
-    echo ""
-    echo "--- RAM après ---"
-    free -h | head -2
+  rm -f /tmp/llama-out.log
+  timeout 300 bin/llama-cli -m "$HOME/gguf-cache/model.gguf" \
+    -p "$PROMPT" -n 96 --temp 0 --threads 4 --simple-io -no-cnv \
+    </dev/null > /tmp/llama-out.log 2>&1 &
+  LLAMA_PID=$!
+  # journalisation progressive : on suit le log toutes les 10 s
+  LAST=0
+  while kill -0 $LLAMA_PID 2>/dev/null; do
+    sleep 10
+    CUR=$(wc -c < /tmp/llama-out.log 2>/dev/null || echo 0)
+    if [ "$CUR" -gt "$LAST" ]; then
+      tail -c +$((LAST+1)) /tmp/llama-out.log | grep -avE "^\r|estimate|tasks|device|system_info|print_info|load:" | tail -8
+      LAST=$CUR
+    fi
+  done
+  wait $LLAMA_PID; RC=$?
+  echo ""
+  echo "--- sortie complète finale (fin de génération) ---"
+  grep -aA3 -e "^Quelle" -e "capitale" /tmp/llama-out.log | tail -20
+  echo ""
+  echo "===== FIN DE RÉPONSE (code=$RC) ====="
+  echo "[$(STAMP)] fin — $(date -u +%FT%TZ)"
+}
+exit 0
+USERZONE
 
-    # <<< FIN COMMANDES UTILISATEUR >>>
-  }
-) > "bridge/out.txt" 2>&1
+RESTORED="$RESTORED" timeout 720 bash /tmp/user-zone.sh > "bridge/out.txt" 2>&1
+echo "zone utilisateur terminée (code $?)" >> bridge/out.txt
 
 # ---------- PHASE 3 : SNAPSHOT + PUBLICATION ----------
 mkdir -p bridge/state
@@ -118,7 +115,7 @@ echo "snapshot: $(ls -la "$SNAP" 2>/dev/null || echo 'ECHEC CREATION')" >> bridg
 git config user.name "vm-bridge"
 git config user.email "vm-bridge@users.noreply.github.com"
 git add -f bridge/out.txt "$SNAP"
-git commit -m "bridge: gemma 4 e2b — installation + test capitale de la France ($(date -u +%FT%TZ))" || true
+git commit -m "bridge: gemma 4 e2b — test capitale de la France ($(date -u +%FT%TZ))" || true
 for i in 1 2 3 4 5; do
   if git push origin HEAD:arena/01a061e4-vm-arena; then
     echo "PUBLICATION OK"
