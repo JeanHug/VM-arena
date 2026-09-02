@@ -1,6 +1,21 @@
-===== RUN 1 : creation du marqueur =====
+===== RUN 2 : le marqueur a-t-il survécu ? =====
 hostname : runnervmgx7h7
-uptime   : up 7 minutes (boot: 2026-09-02 12:31:22)
-fichier cree :
--rw-r--r-- 1 runner runner 30 Sep  2 12:39 /tmp/preuve-persistence.txt
-marqueur-persistence-XYZ-2026
+uptime   : up 0 minutes (boot: 2026-09-02 12:39:03)
+
+>>> FICHIER ABSENT : la VM a été réinitialisée (nouvelle machine)
+
+--- autres traces du run 1 ? ---
+clr-debug-pipe-2062-3442-in
+clr-debug-pipe-2062-3442-out
+clr-debug-pipe-2082-3659-in
+clr-debug-pipe-2082-3659-out
+dotnet-diagnostic-2062-3442-socket
+dotnet-diagnostic-2082-3659-socket
+snap-private-tmp
+systemd-private-a702de9fcbff4628a4aacdb7c8e0e455-ModemManager.service-wZAq91
+systemd-private-a702de9fcbff4628a4aacdb7c8e0e455-chrony.service-xvaFtB
+systemd-private-a702de9fcbff4628a4aacdb7c8e0e455-haveged.service-85VBeB
+systemd-private-a702de9fcbff4628a4aacdb7c8e0e455-polkit.service-dFyYIZ
+systemd-private-a702de9fcbff4628a4aacdb7c8e0e455-systemd-logind.service-XxhPei
+systemd-private-a702de9fcbff4628a4aacdb7c8e0e455-systemd-resolved.service-7173Tt
+systemd-private-a702de9fcbff4628a4aacdb7c8e0e455-systemd-timedated.service-4fRflt
