@@ -1,1 +1,1 @@
-echo "=== SYSTÈME DE CONTRÔLE OPÉRATIONNEL ==="; echo "wrapper embarque la résolution -X theirs : oui/non"; grep -c "X theirs" /home/user/../home/runner/work/VM-arena/VM-arena/bridge/cmd.txt 2>/dev/null || grep -c "X theirs" "$GITHUB_WORKSPACE/bridge/cmd.txt"
+grep -c "X theirs" "$GITHUB_WORKSPACE/bridge/cmd.txt" && echo "✅ wrapper blindé contre les conflits"
