@@ -68,3 +68,5 @@ for i in 1 2 3 4 5; do
   sleep 5
 done
 exit 0
+
+# [run de verification 2026-09-02T12:42:47Z] — contenu inchangé sinon déclenchement
