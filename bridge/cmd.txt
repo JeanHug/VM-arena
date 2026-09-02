@@ -1,13 +1,19 @@
 # ============================================================
-# bridge/cmd.txt — VM PERSISTANTE
-#   Phase 1 : restauration de bridge/state/snapshot.tar.gz → ~/persist
-#   Phase 2 : ZONE COMMANDES UTILISATEUR
-#   Phase 3 : snapshot de ~/persist → commit → push (out.txt + état)
+# bridge/cmd.txt — WRAPPER GÉNÉRIQUE PERMANENT (ne plus éditer)
+#
+#   Phase 1 : restauration de l'état (snapshot → ~/persist)
+#   Phase 2 : exécution de bridge/task.sh
+#             - target "action"    → exécuté ici même (VM Actions)
+#             - target "codespace" → relayé en SSH au Codespace
+#   Phase 3 : snapshot + publication (out.txt + artifacts)
+#
+#   Piloté par vmctl.py — ne jamais modifier ce fichier à la main.
 # ============================================================
 
 set +e
 WS="$HOME/persist"
 SNAP="bridge/state/snapshot.tar.gz"
+TASK_ID="$(cat bridge/task_id.txt 2>/dev/null || echo sans-id)"
 
 # ---------- PHASE 1 : RESTAURATION DE L'ÉTAT ----------
 mkdir -p "$WS"
@@ -15,99 +21,113 @@ if [ -f "$SNAP" ]; then
   tar -xzf "$SNAP" -C "$WS" 2>/dev/null
   RESTORED="OUI — $(find "$WS" -type f | wc -l) fichiers, $(du -sh "$WS" | cut -f1)"
 else
-  RESTORED="NON — première session (aucun snapshot présent)"
+  RESTORED="NON — première session"
 fi
 
-# ---------- PHASE 2 : ZONE COMMANDES UTILISATEUR ----------
-cat > /tmp/user-zone.sh <<'USERZONE'
+# ---------- PHASE 2 : EXÉCUTION DE LA TÂCHE ----------
+TARGET="$(cat bridge/target.txt 2>/dev/null || echo action)"
+export TASK_ID RESTORED TARGET
+
+cat > /tmp/relay-codespace.sh <<'RELAY'
+# ---- relais d'exécution vers le Codespace (via PAT) ----
+set +e
 cd "$HOME/persist" || exit 1
 {
-  echo "===== PONT CODESPACE — TEST D'ACCÈS COMPLET ====="
-  echo "# host Actions: $(hostname)"
-  echo "# date: $(date -u +%FT%TZ)"
-  echo "# état restauré : $RESTORED"
+  echo "===== TÂCHE $TASK_ID → CODESPACE ====="
+  echo "# host Actions: $(hostname) | date: $(date -u +%FT%TZ)"
+  echo "# état persistant restauré : $RESTORED"
   echo ""
 
-  # ---- 0) le secret est-il injecté dans ce run ? ----
   if [ -z "$CODESPACE_TOKEN" ]; then
-    echo "❌ ERREUR : CODESPACE_TOKEN vide — le secret n'est pas défini ou pas dans le workflow"
+    echo "❌ CODESPACE_TOKEN absent (secret non injecté ?)"
     exit 0
   fi
-  echo "✅ secret CODESPACE_TOKEN présent (${#CODESPACE_TOKEN} caractères — valeur masquée)"
-
   export GH_TOKEN="$CODESPACE_TOKEN"
 
-  echo ""
-  echo "--- 1) gh cli ---"
-  gh --version | head -1
-
-  echo ""
-  echo "--- 2) liste des codespaces du repo ---"
-  gh codespace list --repo JeanHug/VM-arena \
-    --json name,state,machineName \
-    --template '{{range .}}{{.name}} | {{.state}} | {{.machineName}}{{"\n"}}{{end}}' 2>&1
-
-  CS=$(gh codespace list --repo JeanHug/VM-arena --json name --jq '.[0].name' 2>/dev/null)
+  # sélection du codespace (nom voulu ou premier du repo)
+  WANTED="$(cat bridge/codespace_name.txt 2>/dev/null)"
+  CS="${WANTED:-$(gh api user/codespaces --jq '.codespaces[] | select(.repository.full_name=="JeanHug/VM-arena") | .name' 2>/dev/null | head -1)}"
   if [ -z "$CS" ]; then
-    echo "❌ aucun codespace trouvé sur JeanHug/VM-arena"
+    echo "❌ aucun codespace trouvé"
     exit 0
   fi
-  echo "→ codespace sélectionné : $CS"
+  STATE=$(gh api "user/codespaces/$CS" --jq .state 2>/dev/null)
+  MACHINE=$(gh api "user/codespaces/$CS" --jq .machine.display_name 2>/dev/null)
+  echo "→ codespace : $CS ($MACHINE) — état : $STATE"
 
-  echo ""
-  echo "--- 3) démarrage via API REST (polling jusqu'à 3 min)… ---"
-  if gh api -X POST "user/codespaces/$CS/start" --silent 2>&1; then
-    echo "✅ requête de démarrage envoyée"
-  else
-    echo "⚠️ la requête a répondu une erreur (peut-être déjà en marche), on vérifie l'état…"
+  # démarrage si nécessaire
+  WAS_STOPPED=0
+  if [ "$STATE" != "Available" ] && [ "$STATE" != "Running" ]; then
+    WAS_STOPPED=1
+    echo "→ démarrage…"
+    gh api -X POST "user/codespaces/$CS/start" --silent 2>&1
+    for i in $(seq 1 24); do
+      sleep 10
+      STATE=$(gh api "user/codespaces/$CS" --jq .state 2>/dev/null)
+      [ "$STATE" = "Available" ] && break
+    done
+    if [ "$STATE" != "Available" ]; then
+      echo "❌ démarrage impossible (état : $STATE)"
+      exit 0
+    fi
+    echo "✅ codespace démarré"
   fi
-  ST=""
-  for i in $(seq 1 18); do
-    sleep 10
-    ST=$(gh api "user/codespaces/$CS" --jq .state 2>/dev/null)
-    echo "   [$((i*10))s] état : $ST"
-    [ "$ST" = "Available" ] && break
-  done
-  if [ "$ST" = "Available" ]; then
-    echo "✅ CODESPACE EN MARCHE (état API : Available)"
+  echo ""
+
+  # copie de la tâche + exécution SSH
+  echo "----- DÉBUT DE LA TÂCHE SUR LE CODESPACE -----"
+  gh codespace cp -c "$CS" bridge/task.sh "remote:/tmp/vm-task.sh" 2>&1 || {
+    echo "❌ échec de copie de la tâche"; exit 0;
+  }
+  gh codespace ssh -c "$CS" -- 'bash /tmp/vm-task.sh' 2>&1
+  RC=$?
+  echo "----- FIN DE LA TÂCHE (code=$RC) -----"
+
+  # politique d'arrêt : stop par défaut (économie quota), "keep" pour laisser allumé
+  POLICY="$(cat bridge/codespace_policy.txt 2>/dev/null || echo stop)"
+  if [ "$WAS_STOPPED" = "1" ] && [ "$POLICY" != "keep" ]; then
+    echo ""
+    gh api -X POST "user/codespaces/$CS/stop" --silent 2>&1 \
+      && echo "✅ codespace arrêté — disque conservé (politique : $POLICY)"
   else
-    echo "❌ le codespace n'a pas démarré"
-    exit 0
+    echo "→ codespace laissé en l'état (politique : $POLICY)"
   fi
-
-  echo ""
-  echo "--- 4) SPECS DU CODESPACE via SSH ---"
-  gh codespace ssh -c "$CS" -- 'echo "hostname : $(hostname)"; uname -a; echo "CPU : $(nproc) cœurs"; free -h | head -2; df -h / | tail -1' 2>&1
-
-  echo ""
-  echo "--- 5) test d'écriture (marqueur disque persistant) ---"
-  gh codespace ssh -c "$CS" -- 'echo "VM-ARENA est passée ici : $(date -u)" > ~/BONJOUR_VM_ARENA.txt && cat ~/BONJOUR_VM_ARENA.txt && ls -la ~/BONJOUR_VM_ARENA.txt' 2>&1
-
-  echo ""
-  echo "--- 6) arrêt du codespace (économie du quota, disque conservé) ---"
-  gh api -X POST "user/codespaces/$CS/stop" --silent 2>&1 && echo "✅ arrêté — le disque et le marqueur persistent"
-  echo ""
-  echo "===== FIN DU TEST ====="
 }
 exit 0
-USERZONE
+RELAY
 
-RESTORED="$RESTORED" timeout 1500 bash /tmp/user-zone.sh > "bridge/out.txt" 2>&1
-echo "zone utilisateur terminée (code $?)" >> bridge/out.txt
+cat > /tmp/task-dispatch.sh <<'DISPATCH'
+cd "$HOME/persist" || exit 1
+{
+  echo "===== TÂCHE $TASK_ID → ACTION (exécution locale) ====="
+  echo "# host: $(hostname) | date: $(date -u +%FT%TZ)"
+  echo "# état persistant restauré : $RESTORED"
+  echo ""
+  echo "----- DÉBUT DE LA TÂCHE -----"
+  bash "$GITHUB_WORKSPACE/bridge/task.sh" 2>&1
+  echo "----- FIN DE LA TÂCHE (code=$?) -----"
+}
+exit 0
+DISPATCH
+
+if [ "$TARGET" = "codespace" ]; then
+  timeout 1500 bash /tmp/relay-codespace.sh > "bridge/out.txt" 2>&1
+else
+  timeout 1500 bash /tmp/task-dispatch.sh > "bridge/out.txt" 2>&1
+fi
+echo "[wrapper] tâche $TASK_ID terminée sur $TARGET (code $?)" >> bridge/out.txt
 
 # ---------- PHASE 3 : SNAPSHOT + PUBLICATION ----------
 mkdir -p bridge/state
 tar -czf "$SNAP" -C "$WS" . 2>/dev/null
-echo "snapshot: $(ls -la "$SNAP" 2>/dev/null || echo 'ECHEC CREATION')" >> bridge/out.txt
+echo "snapshot: $(ls -la "$SNAP" 2>/dev/null || echo 'ECHEC')" >> bridge/out.txt
 git config user.name "vm-bridge"
 git config user.email "vm-bridge@users.noreply.github.com"
 git add -f bridge/out.txt "$SNAP"
-git commit -m "bridge: test pont codespace ($(date -u +%FT%TZ))" || true
+[ -d bridge/artifacts ] && git add -f bridge/artifacts 2>/dev/null
+git commit -m "bridge: résultat $TASK_ID ($TARGET)" || true
 for i in 1 2 3 4 5; do
-  if git push origin HEAD:arena/01a061e4-vm-arena; then
-    echo "PUBLICATION OK"
-    break
-  fi
+  if git push origin HEAD:arena/01a061e4-vm-arena; then break; fi
   git pull --rebase origin arena/01a061e4-vm-arena || true
   sleep 5
 done
