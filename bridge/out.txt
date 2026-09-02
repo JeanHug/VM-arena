@@ -1,45 +1,49 @@
-===== VM PERSISTANTE — GEMMA 4 E2B : QUESTION TEST =====
-# host: runnervmgx7h7
-# début: 2026-09-02T13:27:00Z
+===== PONT CODESPACE — TEST D'ACCÈS COMPLET =====
+# host Actions: runnervmgx7h7
+# date: 2026-09-02T17:36:29Z
 # état restauré : OUI — 31 fichiers, 40M
 
-[13:27:00] [MOTEUR] déjà installé (PERSISTANT ✓) : version: 0.3.0-dev (build 10760, commit 0f3a71be1)
+✅ secret CODESPACE_TOKEN présent (40 caractères — valeur masquée)
 
-[13:27:00] [POIDS] récupération du GGUF (unsloth, Apache 2.0)…
-[13:27:00] [POIDS] fichier : gemma-4-E2B-it-Q4_K_M.gguf
-[13:30:39] [POIDS] 2962 Mo téléchargés en 219 s
+--- 1) gh cli ---
+gh version 2.98.0 (2026-08-20)
 
-[13:30:39] [TEST] lancement de l'inférence (timeout interne 5 min)…
+--- 2) liste des codespaces du repo ---
+Unknown JSON field: "machine"
+Available fields:
+  createdAt
+  displayName
+  gitStatus
+  lastUsedAt
+  machineName
+  name
+  owner
+  repository
+  state
+  vscsTarget
+→ codespace sélectionné : laughing-guacamole-g4px7pr4v9xgfp4gr
+→ état actuel : Shutdown
 
-===== QUESTION : Quelle est la capitale de la France ? =====
---- réponse du modèle ---
-██ ██ ▀█▄██ ██ ██ ██ ▀█▄██ ██ ▀████ ████▀ ████▀
-                                    ██    ██
-                                    ▀▀    ▀▀
-build      : b10760-0f3a71be1
-model      : /home/runner/gguf-cache/model.gguf
-ftype      : Q4_K - Medium
-modalities : text
-available commands:
-  /exit or Ctrl+C     stop or exit
-  /regen              regenerate the last response
-  /clear              clear the chat history
-  /read <file>        add a text file
-  /glob <pattern>     add text files using globbing pattern
-[Start thinking]
-Thinking Process:
-1.  **Analyze the Request:** The user is asking in French: "Quelle est la capitale de la France?" (What is the capital of France?).
-2.  **Identify the Core Information:** The required answer is the capital city of France.
-3.  **Retrieve the Knowledge:** The capital of France is Paris.
-4.  **Formulate the Answer (in French):** The answer should be direct and accurate.
-    *   *La capitale de la France est Paris.*
-5.  **Final Review:** The answer is correct and directly addresses the user's question. (Self-Correction/Identity Check: No need to mention my identity unless asked, just provide the factual answer.)
-[End thinking]
-La capitale de la France est **Paris**.
-[ Prompt: 32.6 t/s | Generation: 16.9 t/s ]
-Exiting...
+--- 3) démarrage du codespace (30-90 s)… ---
+unknown shorthand flag: 'c' in -c
 
-===== FIN DE RÉPONSE (code=0) =====
-[13:30:53] fin — 2026-09-02T13:30:53Z
+Usage:  gh codespace [flags]
+
+Available commands:
+  code
+  cp
+  create
+  delete
+  edit
+  jupyter
+  list
+  logs
+  ports
+  rebuild
+  ssh
+  stop
+  view
+
+❌ échec du démarrage
 zone utilisateur terminée (code 0)
-snapshot: -rw-r--r-- 1 runner runner 16349060 Sep  2 13:30 bridge/state/snapshot.tar.gz
+snapshot: -rw-r--r-- 1 runner runner 16349060 Sep  2 17:36 bridge/state/snapshot.tar.gz
