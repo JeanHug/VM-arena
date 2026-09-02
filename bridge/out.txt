@@ -1,16 +1,17 @@
 ===== VM PERSISTANTE — RUN =====
 # host: runnervmgx7h7
-# date: 2026-09-02T12:43:30Z
+# date: 2026-09-02T12:43:51Z
 # espace persistant: /home/runner/persist
-# état restauré : NON — première session (aucun snapshot présent)
+# état restauré : OUI — 2 fichiers, 12K
 
->>> PREUVE : run n°1 sur cet état persistant
+>>> PREUVE : run n°2 sur cet état persistant
 
 --- contenu de ~/persist (persistant) ---
-total 12
+total 16
 drwxr-xr-x  2 runner runner 4096 Sep  2 12:43 .
 drwxr-x--- 12 runner runner 4096 Sep  2 12:43 ..
 -rw-r--r--  1 runner runner    2 Sep  2 12:43 .compteur
+-rw-r--r--  1 runner runner   49 Sep  2 12:43 bonjour.txt
 
-fichier bonjour.txt : salut depuis la VM persistante (écrit au run 1)
+fichier bonjour.txt : salut depuis la VM persistante (écrit au run 2)
 snapshot: -rw-r--r-- 1 runner runner 229 Sep  2 12:43 bridge/state/snapshot.tar.gz
