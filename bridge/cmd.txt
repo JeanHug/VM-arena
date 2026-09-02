@@ -45,7 +45,7 @@ cd "$HOME/persist" || exit 1
   export GH_TOKEN="$CODESPACE_TOKEN"
 
   # sélection du codespace (nom voulu ou premier du repo)
-  WANTED="$(cat bridge/codespace_name.txt 2>/dev/null)"
+  WANTED="$(cat "$GITHUB_WORKSPACE/bridge/codespace_name.txt" 2>/dev/null)"
   CS="${WANTED:-$(gh api user/codespaces --jq '.codespaces[] | select(.repository.full_name=="JeanHug/VM-arena") | .name' 2>/dev/null | head -1)}"
   if [ -z "$CS" ]; then
     echo "❌ aucun codespace trouvé"
@@ -82,7 +82,7 @@ cd "$HOME/persist" || exit 1
   echo "----- FIN DE LA TÂCHE (code=$RC) -----"
 
   # politique d'arrêt : stop par défaut (économie quota), "keep" pour laisser allumé
-  POLICY="$(cat bridge/codespace_policy.txt 2>/dev/null || echo stop)"
+  POLICY="$(cat "$GITHUB_WORKSPACE/bridge/codespace_policy.txt" 2>/dev/null || echo stop)"
   if [ "$WAS_STOPPED" = "1" ] && [ "$POLICY" != "keep" ]; then
     echo ""
     gh api -X POST "user/codespaces/$CS/stop" --silent 2>&1 \
