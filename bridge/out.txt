@@ -1,22 +1,20 @@
-===== TÂCHE 0902-195622-action → ACTION (exécution locale) =====
-# host: runnervmgx7h7 | date: 2026-09-02T19:56:31Z
+===== TÂCHE 0902-200134-action → ACTION (exécution locale) =====
+# host: runnervmgx7h7 | date: 2026-09-02T20:01:44Z
 # état persistant restauré : OUI — 31 fichiers, 40M
 
 ----- DÉBUT DE LA TÂCHE -----
-===== [ACTION] TEST BIG MODEL : Qwen3.8-27B Q3 (13,8 Go, dense) =====
+===== [ACTION] TEST BIG MODEL : Gemma-4-12B Q4_K_M (7,4 Go, dense) =====
 # host: runnervmgx7h7 | RAM totale: 15Gi
 moteur : version: 0.3.0-dev (build 10760, commit 0f3a71be1)
-dépôt testé : unsloth/Qwen3.8-27B-GGUF
-→ retenu : unsloth/Qwen3.8-27B-GGUF/Qwen3.8-27B-UD-IQ3_S.gguf
+fichier retenu : gemma-4-12b-it-Q4_K_M.gguf
 telechargement (chargement TEMPORAIRE, non sauvegarde)...
-telecharge : 12G en 175 s
+telecharge : 6.7G en 261 s
 --- RAM avant inference ---
                total        used        free      shared  buff/cache   available
-Mem:            15Gi       1.0Gi       995Mi        43Mi        13Gi        14Gi
+Mem:            15Gi       991Mi       4.8Gi        44Mi        10Gi        14Gi
 
 ===== QUESTION : Quelle est la capitale de la France ? =====
 --- reponse du modele ---
-Loading model... 
 ▄▄ ▄▄
 ██ ██
 ██ ██  ▀▀█▄ ███▄███▄  ▀▀█▄    ▄████ ████▄ ████▄
@@ -25,8 +23,8 @@ Loading model...
                                     ██    ██
                                     ▀▀    ▀▀
 build      : b10760-0f3a71be1
-model      : /home/runner/gguf-cache/Qwen3.8-27B-UD-IQ3_S.gguf
-ftype      : IQ3_S - 3.4375 bpw
+model      : /home/runner/gguf-cache/gemma-4-12b-it-Q4_K_M.gguf
+ftype      : Q4_K - Medium
 modalities : text
 available commands:
   /exit or Ctrl+C     stop or exit
@@ -35,18 +33,24 @@ available commands:
   /read <file>        add a text file
   /glob <pattern>     add text files using globbing pattern
 [Start thinking]
-The user is asking in French: "What is the capital of France?" This is a simple factual question. The answer is Paris. I should respond in French since the question is in French.
+*   Question: "Quelle est la capitale de la France ?" (What is the capital of France?)
+    *   Language: French.
+    *   Subject: Geography (Capital of France).
+    *   The capital of France is Paris.
+    *   Direct answer: "La capitale de la France est Paris."
+    *   Is it accurate? Yes.
+    *   Is it in the correct language? Yes.
 [End thinking]
 La capitale de la France est **Paris**.
-[ Prompt: 2.6 t/s | Generation: 0.8 t/s ]
+[ Prompt: 13.1 t/s | Generation: 3.2 t/s ]
 Exiting...
-MAX_RSS_KB=15249548
+MAX_RSS_KB=15267312
 
 --- performances ---
-[ Prompt: 2.6 t/s | Generation: 0.8 t/s ]
+[ Prompt: 13.1 t/s | Generation: 3.2 t/s ]
 RAM max du modele : 0.0 Go
-VERDICT: 🐢 0.8 t/s <= 10 — sous le seuil
+VERDICT: 🐢 3.2 t/s <= 10 — sous le seuil
 (cache purge — modele non sauvegarde, code=0)
 ----- FIN DE LA TÂCHE (code=0) -----
-[wrapper] tâche 0902-195622-action terminée sur action (code 0)
-snapshot: -rw-r--r-- 1 runner runner 16349060 Sep  2 20:01 bridge/state/snapshot.tar.gz
+[wrapper] tâche 0902-200134-action terminée sur action (code 0)
+snapshot: -rw-r--r-- 1 runner runner 16349060 Sep  2 20:06 bridge/state/snapshot.tar.gz
