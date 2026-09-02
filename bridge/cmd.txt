@@ -38,14 +38,13 @@ fi
     else
       echo "[MOTEUR] installation de llama.cpp (binaire précompilé ubuntu)…"
       mkdir -p bin
-      REL_JSON=$(curl -sL --max-time 30 https://api.github.com/repos/ggml-org/llama.cpp/releases/latest)
-      URL=$(echo "$REL_JSON" | grep -o '"browser_download_url": *"[^"]*ubuntu-x64\.zip"' | head -1 | cut -d'"' -f4)
-      if [ -z "$URL" ]; then
-        URL=$(echo "$REL_JSON" | grep -o '"browser_download_url": *"[^"]*linux[^"]*\.zip"' | head -1 | cut -d'"' -f4)
-      fi
+      TAG=$(curl -sL --max-time 30 "https://api.github.com/repos/ggml-org/llama.cpp/releases?per_page=1" | grep -o '"tag_name": *"[^"]*"' | head -1 | cut -d'"' -f4)
+      echo "[MOTEUR] build nocturne : $TAG"
+      URL="https://github.com/ggml-org/llama.cpp/releases/download/$TAG/llama-$TAG-bin-ubuntu-x64.tar.gz"
       echo "[MOTEUR] téléchargement : $URL"
-      curl -sL --max-time 300 -o /tmp/llama.zip "$URL"
-      python3 -c "import zipfile; zipfile.ZipFile('/tmp/llama.zip').extractall('/tmp/llamacpp')"
+      rm -rf /tmp/llamacpp && mkdir -p /tmp/llamacpp
+      curl -sL --retry 3 --max-time 300 -o /tmp/llama.tar.gz "$URL"
+      tar -xzf /tmp/llama.tar.gz -C /tmp/llamacpp
       find /tmp/llamacpp -name 'llama-cli' -exec cp {} bin/ \;
       chmod +x bin/llama-cli
       echo "[MOTEUR] installé : $(bin/llama-cli --version 2>&1 | head -1)"
