@@ -81,7 +81,7 @@ Quelle est la capitale de la France ?<end_of_turn>
 "
   rm -f /tmp/llama-out.log
   timeout 300 bin/llama-cli -m "$HOME/gguf-cache/model.gguf" \
-    -p "$PROMPT" -n 96 --temp 0 --threads 4 --simple-io -no-cnv \
+    -p "$PROMPT" -n 96 --temp 0 --threads 4 --simple-io \
     </dev/null > /tmp/llama-out.log 2>&1 &
   LLAMA_PID=$!
   # journalisation progressive : on suit le log toutes les 10 s
