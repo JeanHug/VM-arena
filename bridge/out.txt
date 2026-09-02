@@ -1,30 +1,30 @@
 ===== VM PERSISTANTE — INSTALLATION GEMMA 4 E2B + TEST =====
 # host: runnervmgx7h7
-# date: 2026-09-02T12:49:18Z
-# état restauré : OUI — 2 fichiers, 16K
+# date: 2026-09-02T12:51:57Z
+# état restauré : OUI — 3 fichiers, 1.5M
 
 [MOTEUR] installation de llama.cpp (binaire précompilé ubuntu)…
 [MOTEUR] build nocturne : b10760
 [MOTEUR] téléchargement : https://github.com/ggml-org/llama.cpp/releases/download/b10760/llama-b10760-bin-ubuntu-x64.tar.gz
-[MOTEUR] installé : bin/llama-cli: error while loading shared libraries: libllama-cli-impl.so: cannot open shared object file: No such file or directory
+[MOTEUR] installé : bin/llama-cli: error while loading shared libraries: libllama-common.so.0: cannot open shared object file: No such file or directory
 
 [POIDS] recherche du GGUF Gemma 4 E2B (unsloth, Apache 2.0)…
 [POIDS] dépôt testé : unsloth/gemma-4-E2B-it-GGUF
 [POIDS] retenu : unsloth/gemma-4-E2B-it-GGUF/gemma-4-E2B-it-Q4_K_M.gguf
 [POIDS] téléchargement : https://huggingface.co/unsloth/gemma-4-E2B-it-GGUF/resolve/main/gemma-4-E2B-it-Q4_K_M.gguf
-[POIDS] taille : 2962 Mo en 115 s
+[POIDS] taille : 2962 Mo en 120 s
 
 --- RAM avant inférence ---
                total        used        free      shared  buff/cache   available
-Mem:            15Gi       1.0Gi       8.7Gi        43Mi       6.3Gi        14Gi
+Mem:            15Gi       1.0Gi       8.6Gi        43Mi       6.4Gi        14Gi
 
 ===== QUESTION : Quelle est la capitale de la France ? =====
-bin/llama-cli: error while loading shared libraries: libllama-cli-impl.so: cannot open shared object file: No such file or directory
+bin/llama-cli: error while loading shared libraries: libllama-common.so.0: cannot open shared object file: No such file or directory
 ===== FIN DE RÉPONSE =====
 
-[TEMPS] chargement+génération : 0 s | total session : 116 s
+[TEMPS] chargement+génération : 0 s | total session : 121 s
 
 --- RAM après ---
                total        used        free      shared  buff/cache   available
-Mem:            15Gi       1.0Gi       8.7Gi        43Mi       6.3Gi        14Gi
-snapshot: -rw-r--r-- 1 runner runner 437086 Sep  2 12:51 bridge/state/snapshot.tar.gz
+Mem:            15Gi       1.0Gi       8.6Gi        43Mi       6.4Gi        14Gi
+snapshot: -rw-r--r-- 1 runner runner 16345295 Sep  2 12:54 bridge/state/snapshot.tar.gz
