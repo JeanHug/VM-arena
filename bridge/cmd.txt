@@ -80,24 +80,12 @@ Quelle est la capitale de la France ?<end_of_turn>
 <start_of_turn>model
 "
   rm -f /tmp/llama-out.log
-  timeout 300 bin/llama-cli -m "$HOME/gguf-cache/model.gguf" \
-    -p "$PROMPT" -n 96 --temp 0 --threads 4 --simple-io \
-    </dev/null > /tmp/llama-out.log 2>&1 &
-  LLAMA_PID=$!
-  # journalisation progressive : on suit le log toutes les 10 s
-  LAST=0
-  while kill -0 $LLAMA_PID 2>/dev/null; do
-    sleep 10
-    CUR=$(wc -c < /tmp/llama-out.log 2>/dev/null || echo 0)
-    if [ "$CUR" -gt "$LAST" ]; then
-      tail -c +$((LAST+1)) /tmp/llama-out.log | grep -avE "^\r|estimate|tasks|device|system_info|print_info|load:" | tail -8
-      LAST=$CUR
-    fi
-  done
-  wait $LLAMA_PID; RC=$?
-  echo ""
-  echo "--- sortie complète finale (fin de génération) ---"
-  grep -aA3 -e "^Quelle" -e "capitale" /tmp/llama-out.log | tail -20
+  printf 'Quelle est la capitale de la France ?\n' | timeout 240 bin/llama-cli \
+    -m "$HOME/gguf-cache/model.gguf" -cnv --simple-io -n 200 --temp 0 --threads 4 \
+    > /tmp/llama-out.log 2>&1
+  RC=$?
+  echo "--- réponse du modèle ---"
+  grep -avE "^> |^\r?$|estimate|tasks|device|system_info|print_info|load:|llama_" /tmp/llama-out.log | tail -25
   echo ""
   echo "===== FIN DE RÉPONSE (code=$RC) ====="
   echo "[$(STAMP)] fin — $(date -u +%FT%TZ)"
