@@ -1,21 +1,19 @@
-===== TÂCHE 0902-201852-action → ACTION (exécution locale) =====
-# host: runnervmgx7h7 | date: 2026-09-02T20:19:33Z
+===== TÂCHE 0902-202050-action → ACTION (exécution locale) =====
+# host: runnervmgx7h7 | date: 2026-09-02T20:21:00Z
 # état persistant restauré : OUI — 31 fichiers, 40M
 
 ----- DÉBUT DE LA TÂCHE -----
-===== [FEDERE 32 Go] GEMMA-4-26B-A4B UD-Q4_K_M (16,9 Go) réparti sur 2 nœuds =====
-# host pilote: runnervmgx7h7 | date: 2026-09-02T20:19:33Z
-codespace nœud distant : laughing-guacamole-g4px7pr4v9xgfp4gr (Available)
-→ Available ✓ (démarrage: 0s)
---- (re)lancement du nœud rpc-server sur le codespace (via SSH) ---
+===== [FEDERE 32 Go] GEMMA-4-26B-A4B UD-Q4_K_M (16,9 Go) sur 2 nœuds =====
+# host pilote: runnervmgx7h7 | date: 2026-09-02T20:21:00Z
+codespace nœud : laughing-guacamole-g4px7pr4v9xgfp4gr (Shutdown)
+--- attente SSH du codespace (il annonce Available avant de servir) ---
+SSH prêt (10s)
+--- (re)lancement du rpc-server sur le nœud ---
 shell closed: exit status 255
---- tunnel SSH Actions→Codespace (port local 150052) ---
+--- tunnel SSH Actions→Codespace (option A: ssh-flags natifs) ---
+option A KO — option B: config OpenSSH + ssh -L
+alias ssh: cs.laughing-guacamole-g4px7pr4v9xgfp4gr.main
 TUNNEL KO:
-      --profile string      Name of the SSH profile to use
-  -R, --repo string         Filter codespace selection by repository name (user/repo)
-      --repo-owner string   Filter codespace selection by repository owner (username or org)
-      --server-port int     SSH server port number (0 => pick unused)
-  
 ----- FIN DE LA TÂCHE (code=1) -----
-[wrapper] tâche 0902-201852-action terminée sur action (code 0)
-snapshot: -rw-r--r-- 1 runner runner 16349060 Sep  2 20:19 bridge/state/snapshot.tar.gz
+[wrapper] tâche 0902-202050-action terminée sur action (code 0)
+snapshot: -rw-r--r-- 1 runner runner 16349060 Sep  2 20:21 bridge/state/snapshot.tar.gz
