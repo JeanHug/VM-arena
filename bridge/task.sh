@@ -1,29 +1,27 @@
 Q="Quelle est la capitale de la France ?"
-echo "===== [ACTION] TEST BIG MODEL : Qwen3.8-27B Q3 (13,8 Go, dense) ====="
+echo "===== [ACTION] TEST BIG MODEL : Gemma-4-12B Q4_K_M (7,4 Go, dense) ====="
 echo "# host: $(hostname) | RAM totale: $(free -h | awk '/Mem:/{print $2}')"
 cd "$HOME/persist" || exit 1
 export LD_LIBRARY_PATH="$PWD/bin:${LD_LIBRARY_PATH:-}"
 if ! bin/llama-cli --version >/dev/null 2>&1; then echo "ERREUR moteur absent"; exit 1; fi
 echo "moteur : $(bin/llama-cli --version 2>&1 | head -1)"
-FILE=""
-for REPO in unsloth/Qwen3.8-27B-GGUF bartowski/Qwen3.8-27B-GGUF AtomicChat/Qwen3.8-27B-GGUF; do
-  echo "dépôt testé : $REPO"
-  FILE=$(curl -sL --max-time 30 "https://huggingface.co/api/models/$REPO" | PREFS="UD-IQ3|IQ3|UD-Q3|Q3" python3 -c "
+REPO="unsloth/gemma-4-12B-it-GGUF"
+PREFS="Q4_K_M|Q4_K_S"
+FILE=$(curl -sL --max-time 30 "https://huggingface.co/api/models/$REPO" | PREFS="$PREFS" python3 -c "
 import json,sys,os
 try:
     d=json.load(sys.stdin)
-    files=[f['rfilename'] for f in d.get('siblings',[]) if f['rfilename'].endswith('.gguf')]
-    files=[f for f in files if not any(x in f for x in ('BF16','mmproj','-00001','-00002'))]
+    files=[s['rfilename'] for s in d.get('siblings',[]) if s['rfilename'].endswith('.gguf')]
     prefs=os.environ.get('PREFS','').split('|')
     for p in prefs:
         for f in files:
             if p in f:
                 print(f); sys.exit()
+    print(files[0] if files else '')
 except Exception:
     pass")
-  if [ -n "$FILE" ]; then echo "→ retenu : $REPO/$FILE"; break; fi
-done
-if [ -z "$FILE" ]; then echo "ERREUR: aucun gguf Q3 trouve dans les 3 dépôts"; exit 1; fi
+[ -z "$FILE" ] && { echo "ERREUR: aucun gguf trouve"; exit 1; }
+echo "fichier retenu : $FILE"
 GGUF="$HOME/gguf-cache/$FILE"
 mkdir -p "$HOME/gguf-cache"
 if [ -s "$GGUF" ]; then
