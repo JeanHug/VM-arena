@@ -1,3 +1,1 @@
-echo "TEST DE FUMÉE DU WRAPPER GÉNÉRIQUE"
-echo "node: $(hostname) | $(nproc) cœurs"
-echo "moteur persistant : $(bin/llama-cli --version 2>&1 | head -1 || echo absent)"
+echo "=== CODESPACE CONTACTÉ PAR VMCTL ==="; hostname; echo "CPU: $(nproc) cœurs"; free -h | head -2; echo "--- marqueur écrit par le test précédent (persistance disque) ---"; cat ~/BONJOUR_VM_ARENA.txt 2>/dev/null || echo "(absent)"
