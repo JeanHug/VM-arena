@@ -1,37 +1,11 @@
-===== PONT CODESPACE — TEST D'ACCÈS COMPLET =====
-# host Actions: runnervmgx7h7
-# date: 2026-09-02T17:41:16Z
-# état restauré : OUI — 31 fichiers, 40M
+===== TÂCHE smoke-183005 → ACTION (exécution locale) =====
+# host: runnervmejwal | date: 2026-09-02T18:30:53Z
+# état persistant restauré : OUI — 31 fichiers, 40M
 
-✅ secret CODESPACE_TOKEN présent (40 caractères — valeur masquée)
-
---- 1) gh cli ---
-gh version 2.98.0 (2026-08-20)
-
---- 2) liste des codespaces du repo ---
-laughing-guacamole-g4px7pr4v9xgfp4gr | Available | standardLinux32gb
-→ codespace sélectionné : laughing-guacamole-g4px7pr4v9xgfp4gr
-
---- 3) démarrage via API REST (polling jusqu'à 3 min)… ---
-✅ requête de démarrage envoyée
-   [10s] état : Available
-✅ CODESPACE EN MARCHE (état API : Available)
-
---- 4) SPECS DU CODESPACE via SSH ---
-hostname : codespaces-95b38f
-Linux codespaces-95b38f 6.8.0-1052-azure #58~22.04.1-Ubuntu SMP Thu Mar 26 05:02:21 UTC 2026 x86_64 x86_64 x86_64 GNU/Linux
-CPU : 4 cœurs
-               total        used        free      shared  buff/cache   available
-Mem:            15Gi       1.3Gi       5.3Gi        59Mi       9.4Gi        14Gi
-overlay          32G  9.6G   21G  33% /
-
---- 5) test d'écriture (marqueur disque persistant) ---
-VM-ARENA est passée ici : Wed Sep  2 17:41:40 UTC 2026
--rw-rw-r-- 1 codespace codespace 56 Sep  2 17:41 /home/codespace/BONJOUR_VM_ARENA.txt
-
---- 6) arrêt du codespace (économie du quota, disque conservé) ---
-✅ arrêté — le disque et le marqueur persistent
-
-===== FIN DU TEST =====
-zone utilisateur terminée (code 0)
-snapshot: -rw-r--r-- 1 runner runner 16349060 Sep  2 17:41 bridge/state/snapshot.tar.gz
+----- DÉBUT DE LA TÂCHE -----
+TEST DE FUMÉE DU WRAPPER GÉNÉRIQUE
+node: runnervmejwal | 4 cœurs
+moteur persistant : version: 0.3.0-dev (build 10760, commit 0f3a71be1)
+----- FIN DE LA TÂCHE (code=0) -----
+[wrapper] tâche smoke-183005 terminée sur action (code 0)
+snapshot: -rw-r--r-- 1 runner runner 16346895 Sep  2 18:30 bridge/state/snapshot.tar.gz
