@@ -46,7 +46,8 @@ except Exception: pass"); do
   find "$HOME/gguf-cache/q36" -name "*.gguf" -exec du -h {} \;
   echo "DL total : $(( $(date +%s) - T1 )) s"
   MAIN=$(find "$HOME/gguf-cache/q36" -name "*-00001-of-00002.gguf" | head -1)
-  MAIN=$(ls "$HOME/gguf-cache/q36/"*-00001-of-00002.gguf | head -1)
+  MAIN=$(find "$HOME/gguf-cache/q36" -name "*-00001-of-00002.gguf" | head -1)
+  echo "shard principal : $MAIN"
   echo "--- 4) vitesse (question test) sur $MAIN ---"
   free -h | head -2
   timeout 300 bin/llama-cli -m "$MAIN" \
