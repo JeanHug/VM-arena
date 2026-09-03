@@ -1,0 +1,57 @@
+===== TÂCHE 0903-161314-action → ACTION (exécution locale) =====
+# host: runnervmejwal | date: 2026-09-03T16:13:22Z
+# état persistant restauré : OUI — 31 fichiers, 40M
+
+----- DÉBUT DE LA TÂCHE -----
+===== [ACTION] GÉNÉRATION v4 — chat roux forêt (VAE miroir Comfy + libs complètes) =====
+# host: runnervmejwal | début: 2026-09-03T16:13:22Z
+--- 1) binaire + TOUTES les libs du zip ---
+binaire : /home/runner/flux-tmp/bin/sd-cli
+stable-diffusion.cpp version unknown, commit 6b3edaa
+--- 2) poids (diffusion + qwen3-4b + VAE miroir non-gated) ---
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+diffusion OK
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+qwen3-4b OK
+--- sonde VAE miroir (candidats en Python, premier qui marche) ---
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+OK|/home/runner/flux-tmp/w/vae/split_files/vae/flux2-vae.safetensors
+VAE final : /home/runner/flux-tmp/w/vae/split_files/vae/flux2-vae.safetensors
+2.3G	/home/runner/flux-tmp/w/flux-2-klein-4b-Q4_0.gguf
+2.4G	/home/runner/flux-tmp/w/Qwen3-4B-Q4_K_M.gguf
+4.0K	/home/runner/flux-tmp/w/vae/.cache/huggingface/CACHEDIR.TAG
+4.0K	/home/runner/flux-tmp/w/vae/.cache/huggingface/.gitignore
+4.0K	/home/runner/flux-tmp/w/vae/.cache/huggingface/download/split_files/vae/flux2-vae.safetensors.metadata
+0	/home/runner/flux-tmp/w/vae/.cache/huggingface/download/split_files/vae/flux2-vae.safetensors.lock
+321M	/home/runner/flux-tmp/w/vae/split_files/vae/flux2-vae.safetensors
+DIFFP=/home/runner/flux-tmp/w/flux-2-klein-4b-Q4_0.gguf
+LLMP=/home/runner/flux-tmp/w/Qwen3-4B-Q4_K_M.gguf
+VAEPF=/home/runner/flux-tmp/w/vae/split_files/vae/flux2-vae.safetensors
+
+--- 3) GÉNÉRATION (4 steps, 768x512) ---
+[INFO ] stable-diffusion.cpp:5317 - get_learned_condition completed, taking 25.68s
+[INFO ] stable-diffusion.cpp:5700 - generating image: 1/1 - seed 42
+  |##                                                | 3/149 - 0.00MB/s[K  |##################################################| 149/149 - 11.40GB/s[K
+[INFO ] model_loader.cpp:1238 - loading tensors completed, taking 0.20s (read: 0.18s, memcpy: 0.00s, convert: 0.01s, copy_to_backend: 0.00s)
+  |============>                                     | 1/4 - 185.36s/it[K  |=========================>                        | 2/4 - 184.69s/it[K  |=====================================>            | 3/4 - 184.77s/it[K  |==================================================| 4/4 - 184.94s/it[K
+[INFO ] stable-diffusion.cpp:5733 - sampling completed, taking 739.82s
+[INFO ] stable-diffusion.cpp:5745 - generating 1 latent images completed, taking 739.82s
+[INFO ] stable-diffusion.cpp:5342 - decoding 1 latents
+  |#                                                 | 2/140 - 0.00MB/s[K  |##################################################| 140/140 - 941.72MB/s[K
+[INFO ] model_loader.cpp:1238 - loading tensors completed, taking 0.20s (read: 0.01s, memcpy: 0.00s, convert: 0.05s, copy_to_backend: 0.00s)
+[INFO ] stable-diffusion.cpp:5408 - latent 1 decoded, taking 60.57s
+[INFO ] stable-diffusion.cpp:5412 - decode_first_stage completed, taking 60.57s
+[INFO ] stable-diffusion.cpp:5884 - generate_image completed in 826.08s
+[INFO ] main.cpp:504  - save result image 0 to '/home/runner/flux-tmp/chat-roux.png' (success)
+[INFO ] main.cpp:576  - 1/1 images saved
+(code=0)
+-rw-r--r-- 1 runner runner 890487 Sep  3 16:27 /home/runner/flux-tmp/chat-roux.png
+
+--- 4) publication + purge ---
+IMAGE PUBLIÉE : bridge/artifacts/chat-roux-foret.png (872K)
+purgé ✓ (éphémère)
+durée totale : 866 s
+===== FIN =====
+----- FIN DE LA TÂCHE (code=0) -----
+[wrapper] tâche 0903-161314-action terminée sur action (code 0)
+snapshot: -rw-r--r-- 1 runner runner 16346895 Sep  3 16:27 bridge/state/snapshot.tar.gz

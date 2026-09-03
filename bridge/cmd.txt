@@ -1,0 +1,133 @@
+# ============================================================
+# bridge/cmd.txt — WRAPPER GÉNÉRIQUE PERMANENT (ne plus éditer)
+#
+#   Phase 1 : restauration de l'état (snapshot → ~/persist)
+#   Phase 2 : exécution de bridge/task.sh
+#             - target "action"    → exécuté ici même (VM Actions)
+#             - target "codespace" → relayé en SSH au Codespace
+#   Phase 3 : snapshot + publication (out.txt + artifacts)
+#
+#   Piloté par vmctl.py — ne jamais modifier ce fichier à la main.
+# ============================================================
+
+set +e
+WS="$HOME/persist"
+SNAP="bridge/state/snapshot.tar.gz"
+TASK_ID="$(cat bridge/task_id.txt 2>/dev/null || echo sans-id)"
+
+# ---------- PHASE 1 : RESTAURATION DE L'ÉTAT ----------
+mkdir -p "$WS"
+if [ -f "$SNAP" ]; then
+  tar -xzf "$SNAP" -C "$WS" 2>/dev/null
+  RESTORED="OUI — $(find "$WS" -type f | wc -l) fichiers, $(du -sh "$WS" | cut -f1)"
+else
+  RESTORED="NON — première session"
+fi
+
+# ---------- PHASE 2 : EXÉCUTION DE LA TÂCHE ----------
+TARGET="$(cat bridge/target.txt 2>/dev/null || echo action)"
+export TASK_ID RESTORED TARGET
+
+cat > /tmp/relay-codespace.sh <<'RELAY'
+# ---- relais d'exécution vers le Codespace (via PAT) ----
+set +e
+cd "$HOME/persist" || exit 1
+{
+  echo "===== TÂCHE $TASK_ID → CODESPACE ====="
+  echo "# host Actions: $(hostname) | date: $(date -u +%FT%TZ)"
+  echo "# état persistant restauré : $RESTORED"
+  echo ""
+
+  if [ -z "$CODESPACE_TOKEN" ]; then
+    echo "❌ CODESPACE_TOKEN absent (secret non injecté ?)"
+    exit 0
+  fi
+  export GH_TOKEN="$CODESPACE_TOKEN"
+
+  # sélection du codespace (nom voulu ou premier du repo)
+  WANTED="$(cat "$GITHUB_WORKSPACE/bridge/codespace_name.txt" 2>/dev/null)"
+  CS="${WANTED:-$(gh api user/codespaces --jq '.codespaces[] | select(.repository.full_name=="JeanHug/VM-arena") | .name' 2>/dev/null | head -1)}"
+  if [ -z "$CS" ]; then
+    echo "❌ aucun codespace trouvé"
+    exit 0
+  fi
+  STATE=$(gh api "user/codespaces/$CS" --jq .state 2>/dev/null)
+  MACHINE=$(gh api "user/codespaces/$CS" --jq .machine.display_name 2>/dev/null)
+  echo "→ codespace : $CS ($MACHINE) — état : $STATE"
+
+  # démarrage si nécessaire
+  WAS_STOPPED=0
+  if [ "$STATE" != "Available" ] && [ "$STATE" != "Running" ]; then
+    WAS_STOPPED=1
+    echo "→ démarrage…"
+    gh api -X POST "user/codespaces/$CS/start" --silent 2>&1
+    for i in $(seq 1 24); do
+      sleep 10
+      STATE=$(gh api "user/codespaces/$CS" --jq .state 2>/dev/null)
+      [ "$STATE" = "Available" ] && break
+    done
+    if [ "$STATE" != "Available" ]; then
+      echo "❌ démarrage impossible (état : $STATE)"
+      exit 0
+    fi
+    echo "✅ codespace démarré"
+  fi
+  echo ""
+
+  # copie de la tâche + exécution SSH (tâche embarquée en base64 : zéro scp)
+  echo "----- DÉBUT DE LA TÂCHE SUR LE CODESPACE -----"
+  B64="$(base64 -w0 "$GITHUB_WORKSPACE/bridge/task.sh")"
+  gh codespace ssh -c "$CS" -- "echo $B64 | base64 -d > /tmp/vm-task.sh && bash /tmp/vm-task.sh" 2>&1
+  RC=$?
+  echo "----- FIN DE LA TÂCHE (code=$RC) -----"
+
+  # politique d'arrêt : stop par défaut (économie quota), "keep" pour laisser allumé
+  POLICY="$(cat "$GITHUB_WORKSPACE/bridge/codespace_policy.txt" 2>/dev/null || echo stop)"
+  if [ "$WAS_STOPPED" = "1" ] && [ "$POLICY" != "keep" ]; then
+    echo ""
+    gh api -X POST "user/codespaces/$CS/stop" --silent 2>&1 \
+      && echo "✅ codespace arrêté — disque conservé (politique : $POLICY)"
+  else
+    echo "→ codespace laissé en l'état (politique : $POLICY)"
+  fi
+}
+exit 0
+RELAY
+
+cat > /tmp/task-dispatch.sh <<'DISPATCH'
+cd "$HOME/persist" || exit 1
+{
+  echo "===== TÂCHE $TASK_ID → ACTION (exécution locale) ====="
+  echo "# host: $(hostname) | date: $(date -u +%FT%TZ)"
+  echo "# état persistant restauré : $RESTORED"
+  echo ""
+  echo "----- DÉBUT DE LA TÂCHE -----"
+  bash "$GITHUB_WORKSPACE/bridge/task.sh" 2>&1
+  echo "----- FIN DE LA TÂCHE (code=$?) -----"
+}
+exit 0
+DISPATCH
+
+if [ "$TARGET" = "codespace" ]; then
+  timeout 1500 bash /tmp/relay-codespace.sh > "bridge/out.txt" 2>&1
+else
+  timeout 1500 bash /tmp/task-dispatch.sh > "bridge/out.txt" 2>&1
+fi
+echo "[wrapper] tâche $TASK_ID terminée sur $TARGET (code $?)" >> bridge/out.txt
+
+# ---------- PHASE 3 : SNAPSHOT + PUBLICATION ----------
+mkdir -p bridge/state
+tar -czf "$SNAP" -C "$WS" . 2>/dev/null
+echo "snapshot: $(ls -la "$SNAP" 2>/dev/null || echo 'ECHEC')" >> bridge/out.txt
+git config user.name "vm-bridge"
+git config user.email "vm-bridge@users.noreply.github.com"
+git add -f bridge/out.txt "$SNAP"
+[ -d bridge/artifacts ] && git add -f bridge/artifacts 2>/dev/null
+git commit -m "bridge: résultat $TASK_ID ($TARGET)" || true
+for i in 1 2 3 4 5; do
+  if git push origin HEAD:arena/01a061e4-vm-arena; then break; fi
+  git pull --rebase -X theirs origin arena/01a061e4-vm-arena || true
+  sleep 5
+done
+exit 0
+# pilot: vmctl 0903-161314-action
