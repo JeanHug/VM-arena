@@ -18,8 +18,16 @@ except Exception: print(0)")
   done
   [ -z "$PICK" ] && { echo "!! aucune quant <= 14,5 Go (trop gros pour la VM)"; exit 0; }
   echo "→ quant retenue : $PICK ($((PSIZE/1000000000)) Go)"
-  echo "--- 3) téléchargement des shards (TEMPORAIRE) ---"
+  echo "--- 3) téléchargement des shards (TEMPORAIRE, via client HF/xet) ---"
   T1=$(date +%s)
+  pip install -q -U "huggingface_hub[hf_transfer]" 2>/dev/null || pip install -q -U huggingface_hub 2>/dev/null
+  if python3 -c "import huggingface_hub" 2>/dev/null; then
+    HF_HUB_ENABLE_HF_TRANSFER=1 python3 -c "
+from huggingface_hub import snapshot_download
+snapshot_download(repo_id='$R', allow_patterns=['$PDIR/*.gguf'], local_dir='$HOME/gguf-cache/q36', max_workers=4)
+" && echo "DL via hub OK" || echo "!! hub en échec, repli curl"
+  fi
+  # repli / complétion : curl avec reprise sur tout fichier manquant ou tronqué
   for FPATH in $(curl -sL --max-time 30 "https://huggingface.co/api/models/$R/tree/main/$PDIR" | python3 -c "
 import json,sys
 try:
@@ -28,10 +36,16 @@ try:
         if f['path'].endswith('.gguf'): print(f['path'])
 except Exception: pass"); do
     FN=$(basename "$FPATH")
-    curl -sL --retry 2 --max-time 600 -o "$HOME/gguf-cache/q36/$FN" "https://huggingface.co/$R/resolve/main/$FPATH"
-    echo "  $FN : $(du -h "$HOME/gguf-cache/q36/$FN" | cut -f1)"
+    TGT="$HOME/gguf-cache/q36/$PDIR/$FN"
+    [ -s "$TGT" ] || TGT="$HOME/gguf-cache/q36/$FN"
+    if [ ! -s "$TGT" ]; then
+      echo "  curl reprise : $FN"
+      curl -sL -C - --retry 3 --max-time 540 -o "$TGT" "https://huggingface.co/$R/resolve/main/$FPATH"
+    fi
   done
+  find "$HOME/gguf-cache/q36" -name "*.gguf" -exec du -h {} \;
   echo "DL total : $(( $(date +%s) - T1 )) s"
+  MAIN=$(find "$HOME/gguf-cache/q36" -name "*-00001-of-00002.gguf" | head -1)
   MAIN=$(ls "$HOME/gguf-cache/q36/"*-00001-of-00002.gguf | head -1)
   echo "--- 4) vitesse (question test) sur $MAIN ---"
   free -h | head -2
