@@ -27,28 +27,30 @@ from huggingface_hub import hf_hub_download
 hf_hub_download(repo_id='unsloth/Qwen3-4B-GGUF', filename='Qwen3-4B-Q4_K_M.gguf', local_dir='$HOME/flux-tmp/w')
 print('qwen3-4b OK')"
 
-  VAEP=""; for CAND in "Comfy-Org/flux2-klein-4B|split_files/vae" "Comfy-Org/flux2-klein-4B|" "Comfy-Org/FLUX.2-klein-4B|split_files/vae"; do
-    R="${CAND%%|*}"; SUB="${CAND##*|}"
-    echo "sonde VAE : $R ($SUB)"
-    FOUND=$(curl -sL --max-time 30 "https://huggingface.co/api/models/$R/tree/main/$SUB" | python3 -c "
-import json,sys
-try:
-    d=json.load(sys.stdin)
-    for f in d:
-        if f['path'].endswith('.safetensors'): print(f['path']); break
-except Exception: pass")
-    if [ -n "$FOUND" ]; then
-      VAEP="$R|$SUB/$FOUND"
-      echo "  → VAE : $SUB/$FOUND"
-      break
-    fi
-  done
-  [ -z "$VAEP" ] && { echo "❌ aucun VAE miroir trouvé"; exit 1; }
-  R="${VAEP%%|*}"; FPATH="${VAEP##*|}"
-  python3 -c "
+  echo "--- sonde VAE miroir (candidats en Python, premier qui marche) ---"
+  VAERES=$(python3 - <<'PYV'
 from huggingface_hub import hf_hub_download
-hf_hub_download(repo_id='$R', filename='$FPATH', local_dir='$HOME/flux-tmp/w/vae')
-print('vae OK')"
+cands = [
+    ("Comfy-Org/vae-text-encorder-for-flux-klein-4b", "split_files/vae/flux2-vae.safetensors"),
+    ("Comfy-Org/vae-text-encorder-for-flux-klein-4b", "flux2-vae.safetensors"),
+    ("Comfy-Org/flux2-klein-4B", "split_files/vae/flux2-vae.safetensors"),
+    ("Comfy-Org/flux2-klein-4B", "split_files/vae/ae.safetensors"),
+]
+import os
+for repo, fn in cands:
+    try:
+        p = hf_hub_download(repo_id=repo, filename=fn, local_dir=os.environ["HOME"] + "/flux-tmp/w/vae")
+        print("OK|" + p)
+        break
+    except Exception as e:
+        print("essai rate:", repo, fn, type(e).__name__)
+PYV
+)
+  echo "$VAERES" | tail -3
+  VAEPF=$(echo "$VAERES" | grep "^OK|" | head -1 | cut -d'|' -f2)
+  [ -z "$VAEPF" ] && { echo "❌ aucun VAE téléchargeable"; exit 1; }
+  echo "VAE final : $VAEPF"
+
   find "$HOME/flux-tmp/w" -type f -name "*.gguf" -exec du -h {} \;
   find "$HOME/flux-tmp/w/vae" -type f -exec du -h {} \;
 
