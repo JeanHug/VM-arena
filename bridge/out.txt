@@ -1,5 +1,5 @@
-===== TÂCHE 0903-070919-action → ACTION (exécution locale) =====
-# host: runnervmgx7h7 | date: 2026-09-03T07:09:30Z
+===== TÂCHE 0903-071047-action → ACTION (exécution locale) =====
+# host: runnervmgx7h7 | date: 2026-09-03T07:10:57Z
 # état persistant restauré : OUI — 31 fichiers, 40M
 
 ----- DÉBUT DE LA TÂCHE -----
@@ -11,20 +11,21 @@ quant IQ3_S : 14 Go au total
 --- 3) téléchargement des shards (TEMPORAIRE, via client HF/xet) ---
 /home/runner/.local/lib/python3.12/site-packages/huggingface_hub/constants.py:299: FutureWarning: The `HF_HUB_ENABLE_HF_TRANSFER` environment variable is deprecated as 'hf_transfer' is not used anymore. Please use `HF_XET_HIGH_PERFORMANCE` instead to enable high performance transfer with Xet. Visit https://huggingface.co/docs/huggingface_hub/package_reference/environment_variables#hfxethighperformance for more details.
   warnings.warn(
-Fetching 2 files:   0%|          | 0/2 [00:00<?, ?it/s]Fetching 2 files:  50%|█████     | 1/2 [00:01<00:01,  1.53s/it]Fetching 2 files: 100%|██████████| 2/2 [00:43<00:00, 25.17s/it]Fetching 2 files: 100%|██████████| 2/2 [00:43<00:00, 21.67s/it]
+Fetching 2 files:   0%|          | 0/2 [00:00<?, ?it/s]Fetching 2 files:  50%|█████     | 1/2 [00:01<00:01,  1.17s/it]Fetching 2 files: 100%|██████████| 2/2 [00:43<00:00, 25.53s/it]Fetching 2 files: 100%|██████████| 2/2 [00:43<00:00, 21.88s/it]
 DL via hub OK
 11M	/home/runner/gguf-cache/q36/IQ3_S/Qwen3.6-35B-A3B-IQ3_S-00001-of-00002.gguf
 14G	/home/runner/gguf-cache/q36/IQ3_S/Qwen3.6-35B-A3B-IQ3_S-00002-of-00002.gguf
-DL total : 50 s
-ls: cannot access '/home/runner/gguf-cache/q36/*-00001-of-00002.gguf': No such file or directory
---- 4) vitesse (question test) sur  ---
+DL total : 49 s
+shard principal : /home/runner/gguf-cache/q36/IQ3_S/Qwen3.6-35B-A3B-IQ3_S-00001-of-00002.gguf
+--- 4) vitesse (question test) sur /home/runner/gguf-cache/q36/IQ3_S/Qwen3.6-35B-A3B-IQ3_S-00001-of-00002.gguf ---
                total        used        free      shared  buff/cache   available
 Mem:            15Gi       1.0Gi       1.4Gi        42Mi        13Gi        14Gi
-réponse : 
+réponse :    - Expected Answer: Paris
+[ Prompt: 10.9 t/s | Generation: 8.0 t/s ]
 
 --- 5) PURGE ---
 cache purgé ✓ (rien de sauvegardé, codespace intact)
 ===== FIN =====
 ----- FIN DE LA TÂCHE (code=0) -----
-[wrapper] tâche 0903-070919-action terminée sur action (code 0)
-snapshot: -rw-r--r-- 1 runner runner 16349060 Sep  3 07:10 bridge/state/snapshot.tar.gz
+[wrapper] tâche 0903-071047-action terminée sur action (code 0)
+snapshot: -rw-r--r-- 1 runner runner 16349060 Sep  3 07:12 bridge/state/snapshot.tar.gz
