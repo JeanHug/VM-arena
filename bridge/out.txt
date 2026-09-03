@@ -1,49 +1,10 @@
-===== TÂCHE 0903-054942-action → ACTION (exécution locale) =====
-# host: runnervmejwal | date: 2026-09-03T05:49:53Z
+===== TÂCHE 0903-060939-action → ACTION (exécution locale) =====
+# host: runnervmgx7h7 | date: 2026-09-03T06:09:48Z
 # état persistant restauré : OUI — 31 fichiers, 40M
 
 ----- DÉBUT DE LA TÂCHE -----
-===== ÉCHELLE AA — MEILLEURS OUVERTS PAR TAILLE (Q sur capitale France) =====
-# host: runnervmejwal | début: 2026-09-03T05:49:53Z
-
-################################################
-## Granite-4.2-3B  (unsloth/granite-4.2-3b-GGUF)
-################################################
-!! gguf introuvable, modèle sauté
-
-################################################
-## Gemma-4-E4B  (unsloth/gemma-4-E4B-it-GGUF)
-################################################
-fichier: gemma-4-E4B-it-Q4_K_M.gguf
-DL: 4.7G en 332s
-réponse : La capitale de la France est **Paris**.
-[ Prompt: 15.3 t/s | Generation: 10.1 t/s ]
-(purgé)
-
-################################################
-## Qwen3.5-9B  (unsloth/Qwen3.5-9B-GGUF)
-################################################
-fichier: Qwen3.5-9B-Q4_K_M.gguf
-DL: 5.3G en 12s
-réponse :     *   Fact: The capital of France is Paris.
-[ Prompt: 8.2 t/s | Generation: 6.1 t/s ]
-(purgé)
-
-################################################
-## gpt-oss-20b  (unsloth/gpt-oss-20b-GGUF)
-################################################
-!! gguf introuvable, modèle sauté
-
-################################################
-## Qwen3.5-35B-A3B  (unsloth/Qwen3.5-35B-A3B-GGUF)
-################################################
-fichier: Qwen3.5-35B-A3B-UD-IQ3_XXS.gguf
-DL: 13G en 721s
-réponse :     *   The capital of France is Paris.
-[ Prompt: 10.8 t/s | Generation: 8.4 t/s ]
-(purgé)
-
-===== FIN DE L'ÉCHELLE (2026-09-03T06:09:02Z) =====
------ FIN DE LA TÂCHE (code=0) -----
-[wrapper] tâche 0903-054942-action terminée sur action (code 0)
-snapshot: -rw-r--r-- 1 runner runner 16346895 Sep  3 06:09 bridge/state/snapshot.tar.gz
+/home/runner/work/VM-arena/VM-arena/bridge/task.sh: line 24: syntax error near unexpected token `fi'
+/home/runner/work/VM-arena/VM-arena/bridge/task.sh: line 24: `    [ -z "$FOUND" ] && { echo "!! aucun dépôt valide, sauté"; return; fi'
+----- FIN DE LA TÂCHE (code=2) -----
+[wrapper] tâche 0903-060939-action terminée sur action (code 0)
+snapshot: -rw-r--r-- 1 runner runner 16349060 Sep  3 06:09 bridge/state/snapshot.tar.gz
