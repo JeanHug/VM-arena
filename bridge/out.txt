@@ -1,34 +1,49 @@
-===== TÂCHE 0902-205901-action → ACTION (exécution locale) =====
-# host: runnervmgx7h7 | date: 2026-09-02T20:59:12Z
+===== TÂCHE 0903-054942-action → ACTION (exécution locale) =====
+# host: runnervmejwal | date: 2026-09-03T05:49:53Z
 # état persistant restauré : OUI — 31 fichiers, 40M
 
 ----- DÉBUT DE LA TÂCHE -----
-===== [FEDERE 32 Go] GEMMA-4-26B-A4B UD-Q4_K_M (16,9 Go) sur 2 nœuds =====
-# host pilote: runnervmgx7h7 | date: 2026-09-02T20:59:12Z
-codespace nœud : laughing-guacamole-g4px7pr4v9xgfp4gr (Available)
---- attente SSH ---
-SSH prêt (10s)
---- tunnel (méthode C : -L + commande sleep qui maintient) ---
-TUNNEL OK ✓ (15s)
---- lancement rpc-server sur le nœud (script embarqué base64) ---
-LISTEN 0      1          127.0.0.1:50052      0.0.0.0:*          
-RPC_ECOUTE
---- vérification indépendante (2e session SSH) ---
-LISTEN 0      1          127.0.0.1:50052      0.0.0.0:*          
-VU_DEPU_L_EXTERIEUR
---- vérif tunnel porte du trafic ---
-port 50552 répond ✓
---- téléchargement TEMPORAIRE (16,9 Go) ---
-téléchargé : 16G en 368 s
---- RAM pilote avant ---
-               total        used        free      shared  buff/cache   available
-Mem:            15Gi       1.0Gi       258Mi        46Mi        14Gi        14Gi
+===== ÉCHELLE AA — MEILLEURS OUVERTS PAR TAILLE (Q sur capitale France) =====
+# host: runnervmejwal | début: 2026-09-03T05:49:53Z
 
-===== INFÉRENCE FÉDÉRÉE — QUESTION : Quelle est la capitale de la France ? =====
---- RAM du nœud distant avant chargement ---
-               total        used        free      shared  buff/cache   available
-Mem:            15Gi       1.6Gi       8.8Gi        63Mi       5.6Gi        14Gi
---- chargement fédéré -ngl 15 (19 min de budget, log temps réel) ---
-[21:05:50] début inference
-[wrapper] tâche 0902-205901-action terminée sur action (code 124)
-snapshot: -rw-r--r-- 1 runner runner 16349060 Sep  2 21:24 bridge/state/snapshot.tar.gz
+################################################
+## Granite-4.2-3B  (unsloth/granite-4.2-3b-GGUF)
+################################################
+!! gguf introuvable, modèle sauté
+
+################################################
+## Gemma-4-E4B  (unsloth/gemma-4-E4B-it-GGUF)
+################################################
+fichier: gemma-4-E4B-it-Q4_K_M.gguf
+DL: 4.7G en 332s
+réponse : La capitale de la France est **Paris**.
+[ Prompt: 15.3 t/s | Generation: 10.1 t/s ]
+(purgé)
+
+################################################
+## Qwen3.5-9B  (unsloth/Qwen3.5-9B-GGUF)
+################################################
+fichier: Qwen3.5-9B-Q4_K_M.gguf
+DL: 5.3G en 12s
+réponse :     *   Fact: The capital of France is Paris.
+[ Prompt: 8.2 t/s | Generation: 6.1 t/s ]
+(purgé)
+
+################################################
+## gpt-oss-20b  (unsloth/gpt-oss-20b-GGUF)
+################################################
+!! gguf introuvable, modèle sauté
+
+################################################
+## Qwen3.5-35B-A3B  (unsloth/Qwen3.5-35B-A3B-GGUF)
+################################################
+fichier: Qwen3.5-35B-A3B-UD-IQ3_XXS.gguf
+DL: 13G en 721s
+réponse :     *   The capital of France is Paris.
+[ Prompt: 10.8 t/s | Generation: 8.4 t/s ]
+(purgé)
+
+===== FIN DE L'ÉCHELLE (2026-09-03T06:09:02Z) =====
+----- FIN DE LA TÂCHE (code=0) -----
+[wrapper] tâche 0903-054942-action terminée sur action (code 0)
+snapshot: -rw-r--r-- 1 runner runner 16346895 Sep  3 06:09 bridge/state/snapshot.tar.gz
