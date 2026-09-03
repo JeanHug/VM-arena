@@ -46,7 +46,7 @@ print('head OK')"
     echo ""
     echo "--- 3) TEST MTP SPÉCULATIF : main + tête ($HEAD) ---"
     /usr/bin/time -f "MAX_RSS_KB=%M" timeout 420 bin/llama-cli -m "$MAIN" -md "$HEAD" \
-      --spec-type mtp --draft-max 6 --draft-min 2 \
+      --spec-type draft-mtp --spec-draft-n-max 6 \
       --cache-type-k q8_0 --cache-type-v q8_0 \
       -st -p "$Q" -n 220 --temp 0 --threads 4 --simple-io </dev/null > /tmp/mtp.log 2>&1
     RC=$?
@@ -71,7 +71,7 @@ print('draft OK', p)" 2>/dev/null
   DRAFT=$(find "$HOME/gguf-cache/q36mtp/draft" -name "*.gguf" | head -1)
   if [ -n "$DRAFT" ]; then
     /usr/bin/time -f "MAX_RSS_KB=%M" timeout 420 bin/llama-cli -m "$MAIN" -md "$DRAFT" \
-      --draft-max 6 --draft-min 2 \
+      --spec-type draft-simple --spec-draft-n-max 6 \
       --cache-type-k q8_0 --cache-type-v q8_0 \
       -st -p "$Q" -n 220 --temp 0 --threads 4 --simple-io </dev/null > /tmp/draft.log 2>&1
     RC=$?
@@ -84,6 +84,12 @@ print('draft OK', p)" 2>/dev/null
     fi
   fi
 
+  echo ""
+  echo "--- 4bis) bonus : ngram-simple (spéculation sans draft) ---"
+  timeout 300 bin/llama-cli -m "$MAIN" --spec-type ngram-simple \
+    --cache-type-k q8_0 --cache-type-v q8_0 \
+    -st -p "$Q" -n 150 --temp 0 --threads 4 --simple-io </dev/null > /tmp/ng.log 2>&1
+  grep -aE "Prompt:|Generation:" /tmp/ng.log | tail -1
   echo ""
   echo "--- 5) PURGE ---"
   rm -rf "$HOME/gguf-cache/q36mtp" && echo "purgé ✓ (rien de sauvegardé)"
