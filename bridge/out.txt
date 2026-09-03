@@ -1,61 +1,14 @@
-===== TÂCHE 0903-064225-action → ACTION (exécution locale) =====
-# host: runnervmgx7h7 | date: 2026-09-03T06:42:36Z
+===== TÂCHE 0903-064310-action → ACTION (exécution locale) =====
+# host: runnervmgx7h7 | date: 2026-09-03T06:43:20Z
 # état persistant restauré : OUI — 31 fichiers, 40M
 
 ----- DÉBUT DE LA TÂCHE -----
-===== [ACTION] TEST TEMPORAIRE — QWEN 3.6 (MoE A3B) =====
-# host: runnervmgx7h7 | date: 2026-09-03T06:42:36Z
---- 1) découverte des dépôts GGUF Qwen3.6 sur HuggingFace ---
-47
-AesSedai/Qwen3.6-35B-A3B-GGUF
-DuoNeural/Qwen3.6-35B-A3B-Code-imatrix-GGUF
-LuffyTheFox/Qwen3.6-35B-A3B-Uncensored-Genesis-Hermes-V13-GGUF
-SC117/Qwen3.6-35B-A3B-uncensored-heretic-Native-MTP-Preserved-APEX-GGUF
-aj9o9/Qwen3.6-35B-A3B-Escha-W2-GGUF
-bartowski/Qwen_Qwen3.6-35B-A3B-GGUF
-burningfeet/backup-2026-08-24-Qwen3.6-35B-A3B-Uncensored-Genesis-Hermes-V10-GGUF
-byteshape/Qwen3.6-35B-A3B-MTP-GGUF
-crucible-labs/Qwen3.6-35B-A3B-REAP-48-v2-GGUF
-deadbydawn101/RavenX-CyberAgent-Qwen3.6-35B-A3B-Opus-4.7-OpenMythos-Pentester-BugHunter-RATH-GGUF
-havenoammo/Qwen3.6-35B-A3B-MTP-GGUF
-hesamation/Qwen3.6-35B-A3B-Claude-4.6-Opus-Reasoning-Distilled-GGUF
-huihui-ai/Huihui-Qwen3.6-35B-A3B-Claude-4.7-Opus-abliterated-MTP-GGUF
-huihui-ai/Huihui-Qwen3.6-35B-A3B-abliterated-MTP-GGUF
-llmfan46/Qwen3.6-35B-A3B-uncensored-heretic-GGUF
-llmfan46/Qwen3.6-35B-A3B-uncensored-heretic-Native-MTP-Preserved-GGUF
-llmfan46/Qwen3.6-35B-A3B-uncensored-heretic-Native-MTP-Preserved-NVFP4-Experts-Only-GGUF
-localweights/Qwen3.6-35B-A3B-MTP-IMAT-IQ4_XS-Q8nextn-GGUF
-mad-lab-ai/Qwen3.6-35B-A3B-tq-gguf
-mradermacher/Huihui-Qwen3.6-35B-A3B-abliterated-i1-GGUF
-→ dépôt retenu : AesSedai/Qwen3.6-35B-A3B-GGUF
---- 2) sélection du GGUF (3-4 bits, ≤ ~14 GiB) ---
-!! rien dans AesSedai/Qwen3.6-35B-A3B-GGUF — inventaire des fichiers :
-    .gitattributes
-    IQ3_S/Qwen3.6-35B-A3B-IQ3_S-00001-of-00002.gguf
-    IQ3_S/Qwen3.6-35B-A3B-IQ3_S-00002-of-00002.gguf
-    IQ4_XS/Qwen3.6-35B-A3B-IQ4_XS-00001-of-00002.gguf
-    IQ4_XS/Qwen3.6-35B-A3B-IQ4_XS-00002-of-00002.gguf
-    Q4_K_M/Qwen3.6-35B-A3B-Q4_K_M-00001-of-00002.gguf
-    Q4_K_M/Qwen3.6-35B-A3B-Q4_K_M-00002-of-00002.gguf
-    Q5_K_M/Qwen3.6-35B-A3B-Q5_K_M-00001-of-00002.gguf
-    Q5_K_M/Qwen3.6-35B-A3B-Q5_K_M-00002-of-00002.gguf
-    Q6_K/Qwen3.6-35B-A3B-Q6_K-00001-of-00002.gguf
-    Q6_K/Qwen3.6-35B-A3B-Q6_K-00002-of-00002.gguf
-    README.md
-    imatrix.gguf
-    kld_data/01_kld_vs_filesize.png
-    kld_data/02_ppl_vs_filesize.png
-    kld_data/aes_sedai/Qwen3.6-35B-A3B-IQ3_S.md
-    kld_data/aes_sedai/Qwen3.6-35B-A3B-IQ4_XS.md
-    kld_data/aes_sedai/Qwen3.6-35B-A3B-Q4_K_M.md
-    kld_data/aes_sedai/Qwen3.6-35B-A3B-Q5_K_M.md
-    kld_data/aes_sedai/Qwen3.6-35B-A3B-Q6_K.md
-    kld_data/aes_sedai/Qwen3.6-35B-A3B-Q8_0.md
-    kld_data/llm_quantization_data.csv
-    mmproj-Qwen3.6-35B-A3B-BF16.gguf
-    mmproj-Qwen3.6-35B-A3B-F16.gguf
-    mmproj-Qwen3.6-35B-A3B-F32.gguf
-    mmproj-Qwen3.6-35B-A3B-Q8_0.gguf
------ FIN DE LA TÂCHE (code=0) -----
-[wrapper] tâche 0903-064225-action terminée sur action (code 0)
-snapshot: -rw-r--r-- 1 runner runner 16349060 Sep  3 06:42 bridge/state/snapshot.tar.gz
+===== [ACTION] QWEN3.6-35B-A3B — choix de quant par taille réelle =====
+quant Q4_K_M : 23 Go au total
+quant IQ4_XS : 18 Go au total
+quant IQ3_S : 14 Go au total
+→ quant retenue : IQ3_S (14 Go)
+--- 3) téléchargement des shards (TEMPORAIRE) ---
+  Qwen3.6-35B-A3B-IQ3_S-00001-of-00002.gguf : 11M
+[wrapper] tâche 0903-064310-action terminée sur action (code 124)
+snapshot: -rw-r--r-- 1 runner runner 16349060 Sep  3 07:08 bridge/state/snapshot.tar.gz
