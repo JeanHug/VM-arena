@@ -21,7 +21,7 @@ try:
 except Exception: pass")
       if [ -n "$FILE" ]; then FOUND="$REPO"; echo "dépôt : $REPO → $FILE"; break; else echo "dépôt $REPO : rien"; fi
     done
-    [ -z "$FOUND" ] && { echo "!! aucun dépôt valide, sauté"; return; fi
+    [ -z "$FOUND" ] && { echo "!! aucun dépôt valide, sauté"; return; }
     GGUF="$HOME/gguf-cache/$FILE"
     if [ ! -s "$GGUF" ]; then
       T1=$(date +%s)
