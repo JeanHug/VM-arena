@@ -1,22 +1,40 @@
-===== TÂCHE 0903-155913-action → ACTION (exécution locale) =====
-# host: runnervmgx7h7 | date: 2026-09-03T15:59:24Z
+===== TÂCHE 0903-160225-action → ACTION (exécution locale) =====
+# host: runnervmgx7h7 | date: 2026-09-03T16:02:36Z
 # état persistant restauré : OUI — 31 fichiers, 40M
 
 ----- DÉBUT DE LA TÂCHE -----
-===== [ACTION] 10 T/S v3 — tête MTP OFFICIELLE ggml-org =====
-# host: runnervmgx7h7 | date: 2026-09-03T15:59:24Z
---- main IQ3_S (AesSedai, 86 s via Xet) ---
-Fetching 2 files:   0%|          | 0/2 [00:00<?, ?it/s]Fetching 2 files:  50%|█████     | 1/2 [00:00<00:00,  1.27it/s]Fetching 2 files: 100%|██████████| 2/2 [00:53<00:00, 31.24s/it]Fetching 2 files: 100%|██████████| 2/2 [00:53<00:00, 26.67s/it]
-main OK
---- tête MTP officielle (Q4_0, 1 Go) ---
-mtp OK
+===== [ACTION] 10 T/S v4 — le sweet spot REAP (meilleure quant ≤ 13,5 Go) =====
+# host: runnervmgx7h7 | date: 2026-09-03T16:02:36Z
+### échelle de barozp/Qwen3.6-28B-REAP20-A3B-GGUF :
+    Qwen3.6-28B-REAP20-A3B-Q2_K.gguf: 10 Go
+    Qwen3.6-28B-REAP20-A3B-IQ3_XXS.gguf: 11 Go
+    Qwen3.6-28B-REAP20-A3B-Q3_K_S.gguf: 12 Go
+    Qwen3.6-28B-REAP20-A3B-Q3_K_M.gguf: 13 Go
+    Qwen3.6-28B-REAP20-A3B-Q3_K_L.gguf: 14 Go
+    Qwen3.6-28B-REAP20-A3B-Q4_K_S.gguf: 16 Go
+    Qwen3.6-28B-REAP20-A3B-Q4_K_M.gguf: 17 Go
+    Qwen3.6-28B-REAP20-A3B-Q5_K_S.gguf: 19 Go
+    Qwen3.6-28B-REAP20-A3B-Q5_K_M.gguf: 20 Go
+    Qwen3.6-28B-REAP20-A3B-Q6_K.gguf: 23 Go
+    Qwen3.6-28B-REAP20-A3B-Q8_0.gguf: 30 Go
+    Qwen3.6-28B-REAP20-A3B-BF16.gguf: 56 Go
+### échelle de crucible-labs/Qwen3.6-35B-A3B-REAP-48-v2-GGUF :
+    Qwen3.6-35B-A3B-REAP-48-v2.gguf: 9 Go
 
---- TEST A : draft-mtp avec la tête officielle ---
-réponse :    - Expected Answer: Paris
-[ Prompt: 9.0 t/s | Generation: 6.2 t/s ]
+### TEST : barozp/Qwen3.6-28B-REAP20-A3B-GGUF → Qwen3.6-28B-REAP20-A3B-Q3_K_S.gguf
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+DL OK
+réponse : 3.  **Fact-check:** The capital of France is Paris.
+[ Prompt: 14.7 t/s | Generation: 10.9 t/s ]
+
+### TEST : crucible-labs/Qwen3.6-35B-A3B-REAP-48-v2-GGUF → Qwen3.6-35B-A3B-REAP-48-v2.gguf
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+DL OK
+réponse :      a) Capital city (e.g., Paris)
+[ Prompt: 10.7 t/s | Generation: 8.1 t/s ]
 
 purgé ✓
-===== FIN v3 =====
+===== FIN v4 =====
 ----- FIN DE LA TÂCHE (code=0) -----
-[wrapper] tâche 0903-155913-action terminée sur action (code 0)
-snapshot: -rw-r--r-- 1 runner runner 16349060 Sep  3 16:01 bridge/state/snapshot.tar.gz
+[wrapper] tâche 0903-160225-action terminée sur action (code 0)
+snapshot: -rw-r--r-- 1 runner runner 16349060 Sep  3 16:05 bridge/state/snapshot.tar.gz
