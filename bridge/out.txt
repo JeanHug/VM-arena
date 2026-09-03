@@ -1,50 +1,22 @@
-===== TÂCHE 0903-155044-action → ACTION (exécution locale) =====
-# host: runnervmgx7h7 | date: 2026-09-03T15:50:52Z
+===== TÂCHE 0903-155913-action → ACTION (exécution locale) =====
+# host: runnervmgx7h7 | date: 2026-09-03T15:59:24Z
 # état persistant restauré : OUI — 31 fichiers, 40M
 
 ----- DÉBUT DE LA TÂCHE -----
-===== [ACTION] 10 T/S — v2 : tête ggml-org/nextn + repli REAP =====
-# host: runnervmgx7h7 | date: 2026-09-03T15:50:52Z
---- 1) le dépôt ggml-org existe-t-il pour 3.6-35B-A3B ? ---
-dépôt trouvé : ggml-org/Qwen3.6-35B-A3B-GGUF
-    .gitattributes 0 Mo
-    .src_sha 0 Mo
-    Qwen3.6-35B-A3B-BF16.gguf 69376 Mo
-    Qwen3.6-35B-A3B-Q4_K_M.gguf 20419 Mo
-    Qwen3.6-35B-A3B-Q8_0.gguf 36903 Mo
-    README.md 0 Mo
-    convert.log 0 Mo
-    dflash-Qwen3.6-35B-A3B-BF16.gguf 782 Mo
-    dflash-Qwen3.6-35B-A3B-Q8_0.gguf 421 Mo
-    mmproj-Qwen3.6-35B-A3B-BF16.gguf 902 Mo
-    mmproj-Qwen3.6-35B-A3B-Q8_0.gguf 614 Mo
-    mtp-Qwen3.6-35B-A3B-BF16.gguf 3735 Mo
-    mtp-Qwen3.6-35B-A3B-Q4_0.gguf 1060 Mo
-    mtp-Qwen3.6-35B-A3B-Q8_0.gguf 1990 Mo
-ggml-org/Qwen3.6-35B-A3B-it-GGUF : absent
-ggml-org absent → main = AesSedai IQ3_S
-Fetching 2 files:   0%|          | 0/2 [00:00<?, ?it/s]Fetching 2 files:  50%|█████     | 1/2 [00:00<00:00,  1.02it/s]Fetching 2 files: 100%|██████████| 2/2 [01:26<00:00, 50.58s/it]Fetching 2 files: 100%|██████████| 2/2 [01:26<00:00, 43.15s/it]
+===== [ACTION] 10 T/S v3 — tête MTP OFFICIELLE ggml-org =====
+# host: runnervmgx7h7 | date: 2026-09-03T15:59:24Z
+--- main IQ3_S (AesSedai, 86 s via Xet) ---
+Fetching 2 files:   0%|          | 0/2 [00:00<?, ?it/s]Fetching 2 files:  50%|█████     | 1/2 [00:00<00:00,  1.27it/s]Fetching 2 files: 100%|██████████| 2/2 [00:53<00:00, 31.24s/it]Fetching 2 files: 100%|██████████| 2/2 [00:53<00:00, 26.67s/it]
 main OK
-tête ggml-org absente → essai localweights Q8nextn
-candidat : Qwen3.6-35B-A3B-MTP-IMAT-IQ4_XS-Q8nextn.gguf 19182925376
-Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
-head OK
-MAIN=/home/runner/gguf-cache/mtp2/main/IQ3_S/Qwen3.6-35B-A3B-IQ3_S-00001-of-00002.gguf
-HEAD=/home/runner/gguf-cache/mtp2/head/Qwen3.6-35B-A3B-MTP-IMAT-IQ4_XS-Q8nextn.gguf
+--- tête MTP officielle (Q4_0, 1 Go) ---
+mtp OK
 
---- 2) TEST MTP (tête compatible espérée) ---
+--- TEST A : draft-mtp avec la tête officielle ---
 réponse :    - Expected Answer: Paris
-[ Prompt: 2.5 t/s | Generation: 4.3 t/s ]
-
---- 3) repli définitif : Qwen3.6-28B-REAP20-A3B (experts élagués) ---
-fichier REAP : Qwen3.6-28B-REAP20-A3B-Q2_K.gguf
-Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
-reap OK
-réponse : 3.  **Determine the answer:** The capital of France is Paris.
-[ Prompt: 7.1 t/s | Generation: 9.7 t/s ]
+[ Prompt: 9.0 t/s | Generation: 6.2 t/s ]
 
 purgé ✓
-===== FIN v2 =====
+===== FIN v3 =====
 ----- FIN DE LA TÂCHE (code=0) -----
-[wrapper] tâche 0903-155044-action terminée sur action (code 0)
-snapshot: -rw-r--r-- 1 runner runner 16349060 Sep  3 15:58 bridge/state/snapshot.tar.gz
+[wrapper] tâche 0903-155913-action terminée sur action (code 0)
+snapshot: -rw-r--r-- 1 runner runner 16349060 Sep  3 16:01 bridge/state/snapshot.tar.gz
