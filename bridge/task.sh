@@ -14,8 +14,10 @@ try:
     for i in sorted(ids):
         print(i)
 except Exception: pass")
-  echo "$CANDS" | head -12
-  REPO=$(echo "$CANDS" | grep -iE "35b.*a3b|a3b.*35b" | head -1)
+  echo "$CANDS" | wc -l
+  echo "$CANDS" | grep -iE "35b.*a3b|a3b.*35b" | head -20
+  REPO=$(echo "$CANDS" | grep -iE "35b.*a3b|a3b.*35b" | grep -iE "unsloth|ggml-org|bartowski|lmstudio|qwen" | head -1)
+  [ -z "$REPO" ] && REPO=$(echo "$CANDS" | grep -iE "35b.*a3b|a3b.*35b" | head -1)
   [ -z "$REPO" ] && REPO=$(echo "$CANDS" | grep -iE "a3b" | head -1)
   if [ -z "$REPO" ]; then
     echo "!! AUCUN dépôt MoE A3B trouvé en 3.6 — la génération 3.6 n'a visiblement pas de 35B-A3B"
@@ -36,7 +38,16 @@ try:
         for f in files:
             if p in f: print(f); sys.exit()
 except Exception: pass")
-  [ -z "$FILE" ] && { echo "!! aucun gguf quantisé trouvé dans $REPO"; exit 0; }
+  if [ -z "$FILE" ]; then
+    echo "!! rien dans $REPO — inventaire des fichiers :"
+    curl -sL --max-time 30 "https://huggingface.co/api/models/$REPO" | python3 -c "
+import json,sys
+try:
+    d=json.load(sys.stdin)
+    for f in d.get('siblings',[])[:40]: print('   ', f['rfilename'])
+except Exception: pass"
+    exit 0
+  fi
   echo "fichier : $FILE"
 
   echo "--- 3) téléchargement TEMPORAIRE ---"
