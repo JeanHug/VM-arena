@@ -1,84 +1,64 @@
-===== TÂCHE 0903-160935-action → ACTION (exécution locale) =====
-# host: runnervmgx7h7 | date: 2026-09-03T16:09:46Z
+===== TÂCHE 0903-161018-action → ACTION (exécution locale) =====
+# host: runnervmgx7h7 | date: 2026-09-03T16:10:32Z
 # état persistant restauré : OUI — 31 fichiers, 40M
 
 ----- DÉBUT DE LA TÂCHE -----
-===== [ACTION] GÉNÉRATION — chat roux forêt ensoleillée (FLUX.2-klein-4B, éphémère) =====
-# host: runnervmgx7h7 | date: 2026-09-03T16:09:46Z
---- 1) doc officielle flux2 de sd.cpp ---
-# How to Use
+===== [ACTION] GÉNÉRATION — chat roux forêt ensoleillée (recette officielle sd.cpp) =====
+# host: runnervmgx7h7 | début: 2026-09-03T16:10:32Z
+--- 1) binaire sd.cpp (Ubuntu x86_64) ---
+zip OK
+binaire : /home/runner/flux-tmp/bin/sd-cli
+/home/runner/flux-tmp/bin/sd-cli: error while loading shared libraries: libstable-diffusion.so: cannot open shared object file: No such file or directory
+--- 2) téléchargements (Xet) ---
+diffusion : flux-2-klein-4b-Q4_0.gguf
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+diffusion OK
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+qwen3-4b OK
+vae : ae.safetensors
+httpx.HTTPStatusError: Client error '401 Unauthorized' for url 'https://huggingface.co/black-forest-labs/FLUX.2-dev/resolve/main/ae.safetensors'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401
 
-## Flux.2-dev
+The above exception was the direct cause of the following exception:
 
-### Download weights
+Traceback (most recent call last):
+  File "<string>", line 3, in <module>
+  File "/home/runner/.local/lib/python3.12/site-packages/huggingface_hub/utils/_validators.py", line 88, in _inner_fn
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/.local/lib/python3.12/site-packages/huggingface_hub/file_download.py", line 1007, in hf_hub_download
+    return _hf_hub_download_to_local_dir(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/.local/lib/python3.12/site-packages/huggingface_hub/file_download.py", line 1381, in _hf_hub_download_to_local_dir
+    _raise_on_head_call_error(head_call_error, force_download, local_files_only)
+  File "/home/runner/.local/lib/python3.12/site-packages/huggingface_hub/file_download.py", line 1915, in _raise_on_head_call_error
+    raise head_call_error
+huggingface_hub.errors.GatedRepoError: 401 Client Error. (Request ID: Root=1-6a999c1b-3a7c3f253bf994c0648cea1a;00c20954-84b2-4c55-b6b3-fb93de295a83)
 
-- Download FLUX.2-dev
-    - gguf: https://huggingface.co/city96/FLUX.2-dev-gguf/tree/main
-- Download vae
-    - safetensors: https://huggingface.co/black-forest-labs/FLUX.2-dev/tree/main
-- Download FLUX.2-small-decoder (full_encoder_small_decoder.safetensors) as an alternative VAE option
-    - safetensors: https://huggingface.co/black-forest-labs/FLUX.2-small-decoder/tree/main
-- Download Mistral-Small-3.2-24B-Instruct-2506-GGUF
-    - gguf: https://huggingface.co/unsloth/Mistral-Small-3.2-24B-Instruct-2506-GGUF/tree/main
+Cannot access gated repo for url https://huggingface.co/black-forest-labs/FLUX.2-dev/resolve/main/ae.safetensors.
+Access to model black-forest-labs/FLUX.2-dev is restricted. You must have access to it and be authenticated to access it. Please log in.
+4.0K	/home/runner/flux-tmp/w/.cache/huggingface/.gitignore
+4.0K	/home/runner/flux-tmp/w/.cache/huggingface/download/flux-2-klein-4b-Q4_0.gguf.metadata
+0	/home/runner/flux-tmp/w/.cache/huggingface/download/flux-2-klein-4b-Q4_0.gguf.lock
+0	/home/runner/flux-tmp/w/.cache/huggingface/download/Qwen3-4B-Q4_K_M.gguf.lock
+4.0K	/home/runner/flux-tmp/w/.cache/huggingface/download/Qwen3-4B-Q4_K_M.gguf.metadata
+0	/home/runner/flux-tmp/w/.cache/huggingface/download/ae.safetensors.lock
+4.0K	/home/runner/flux-tmp/w/.cache/huggingface/CACHEDIR.TAG
+2.3G	/home/runner/flux-tmp/w/flux-2-klein-4b-Q4_0.gguf
+2.4G	/home/runner/flux-tmp/w/Qwen3-4B-Q4_K_M.gguf
+DIFFP=/home/runner/flux-tmp/w/flux-2-klein-4b-Q4_0.gguf
+LLMP=/home/runner/flux-tmp/w/Qwen3-4B-Q4_K_M.gguf
+VAEPF=
 
-### Examples
+--- 3) GÉNÉRATION (4 steps, 768x512, 4 threads) ---
+/home/runner/flux-tmp/bin/sd-cli: error while loading shared libraries: libstable-diffusion.so: cannot open shared object file: No such file or directory
+(code génération=0)
 
-```
-.\bin\Release\sd-cli.exe --diffusion-model  ..\models\diffusion_models\flux2-dev-Q4_K_S.gguf --vae ..\models\vae\flux2_ae.safetensors  --llm ..\models\text_encoders\Mistral-Small-3.2-24B-Instruct-2506-Q4_K_M.gguf -r .\kontext_input.png -p "change 'flux.cpp' to 'flux2-dev.cpp'" --cfg-scale 1.0 --sampling-method euler -v --diffusion-fa --offload-to-cpu
-```
-
-<img alt="flux2 example" src="../assets/flux2/example.png" />
-
-## Flux.2 klein 4B / Flux.2 klein base 4B
-
-### Download weights
-
-- Download FLUX.2-klein-4B
-    - safetensors: https://huggingface.co/black-forest-labs/FLUX.2-klein-4B
-    - gguf: https://huggingface.co/leejet/FLUX.2-klein-4B-GGUF/tree/main
-- Download FLUX.2-klein-base-4B
-    - safetensors: https://huggingface.co/black-forest-labs/FLUX.2-klein-base-4B
-    - gguf: https://huggingface.co/leejet/FLUX.2-klein-base-4B-GGUF/tree/main
-- Download vae
-    - safetensors: https://huggingface.co/black-forest-labs/FLUX.2-dev/tree/main
-- Download FLUX.2-small-decoder (full_encoder_small_decoder.safetensors) as an alternative VAE option
-    - safetensors: https://huggingface.co/black-forest-labs/FLUX.2-small-decoder/tree/main
-- Download Qwen3 4b
-    - safetensors: https://huggingface.co/Comfy-Org/flux2-klein-4B/tree/main/split_files/text_encoders
-    - gguf: https://huggingface.co/unsloth/Qwen3-4B-GGUF/tree/main
-
-### Examples
-
-```
-.\bin\Release\sd-cli.exe --diffusion-model  ..\models\diffusion_models\flux-2-klein-4b.safetensors --vae ..\models\vae\flux2_ae.safetensors  --llm ..\models\text_encoders\qwen_3_4b.safetensors -p "a lovely cat" --cfg-scale 1.0 --steps 4 -v --offload-to-cpu --diffusion-fa
-```
-
-<img alt="flux2-klein-4b" src="../assets/flux2/flux2-klein-4b.png" />
-
-```
-.\bin\Release\sd-cli.exe --diffusion-model  ..\models\diffusion_models\flux-2-klein-4b.safetensors --vae ..\models\vae\flux2_ae.safetensors  --llm ..\models\text_encoders\qwen_3_4b.safetensors -r .\kontext_input.png -p "change 'flux.cpp' to 'klein.cpp'" --cfg-scale 1.0 --sampling-method euler -v --diffusion-fa --offload-to-cpu --steps 4
-```
-
-<img alt="flux2-klein-4b-edit" src="../assets/flux2/flux2-klein-4b-edit.png" />
-
-```
-.\bin\Release\sd-cli.exe --diffusion-model  ..\models\diffusion_models\flux-2-klein-base-4b.safetensors --vae ..\models\vae\flux2_ae.safetensors  --llm ..\models\text_encoders\qwen_3_4b.safetensors -p "a lovely cat" --cfg-scale 4.0 --steps 20 -v --offload-to-cpu --diffusion-fa
-```
-
-<img alt="flux2-klein-base-4b" src="../assets/flux2/flux2-klein-base-4b.png" />
-
---- 2) binaire sd.cpp linux-x64 (release master-841) ---
-  asset: cudart-sd-bin-win-cu12-x64.zip 563 Mo
-  asset: sd-master-6b3edaa-bin-Darwin-macOS-26.5.2-arm64.zip 49 Mo
-  asset: sd-master-6b3edaa-bin-Linux-Ubuntu-24.04-x86_64-rocm-7.14.0.zip 264 Mo
-  asset: sd-master-6b3edaa-bin-Linux-Ubuntu-24.04-x86_64-vulkan.zip 46 Mo
-  asset: sd-master-6b3edaa-bin-Linux-Ubuntu-24.04-x86_64.zip 32 Mo
-  asset: sd-master-6b3edaa-bin-win-cpu-x64.zip 24 Mo
-  asset: sd-master-6b3edaa-bin-win-cuda12-x64.zip 336 Mo
-  asset: sd-master-6b3edaa-bin-win-rocm-7.14.0-x64.zip 197 Mo
-  asset: sd-master-6b3edaa-bin-win-vulkan-x64.zip 38 Mo
-asset retenu : 
-❌ pas de binaire linux — arrêt
------ FIN DE LA TÂCHE (code=1) -----
-[wrapper] tâche 0903-160935-action terminée sur action (code 0)
-snapshot: -rw-r--r-- 1 runner runner 16349060 Sep  3 16:09 bridge/state/snapshot.tar.gz
+--- 4) publication + purge ---
+❌ pas d'image — dernières lignes:
+purgé ✓ (éphémère, comme demandé)
+durée totale : 35 s
+===== FIN =====
+----- FIN DE LA TÂCHE (code=0) -----
+[wrapper] tâche 0903-161018-action terminée sur action (code 0)
+snapshot: -rw-r--r-- 1 runner runner 16349060 Sep  3 16:11 bridge/state/snapshot.tar.gz
