@@ -1,103 +1,58 @@
-Q="Quelle est la capitale de la France ?"
 {
-  echo "===== [FEDERE 32 Go] GEMMA-4-26B-A4B UD-Q4_K_M (16,9 Go) sur 2 nœuds ====="
-  echo "# host pilote: $(hostname) | date: $(date -u +%FT%TZ)"
-  export GH_TOKEN="$CODESPACE_TOKEN"
-  CS=$(gh api user/codespaces --jq '.codespaces[] | select(.repository.full_name=="JeanHug/VM-arena") | .name' | head -1)
-  [ -z "$CS" ] && { echo "ERREUR: aucun codespace"; exit 1; }
-  ST=$(gh api "user/codespaces/$CS" --jq .state)
-  echo "codespace nœud : $CS ($ST)"
-  if [ "$ST" != "Available" ]; then
-    gh api -X POST "user/codespaces/$CS/start" --silent
-    for i in $(seq 1 24); do sleep 10; ST=$(gh api "user/codespaces/$CS" --jq .state); [ "$ST" = "Available" ] && break; done
-  fi
-  [ "$ST" = "Available" ] || { echo "ERREUR: codespace pas démarré"; exit 1; }
-
-  echo "--- attente SSH ---"
-  OK=0
-  for i in $(seq 1 12); do
-    if gh codespace ssh -c "$CS" -- 'echo ready' >/dev/null 2>&1; then OK=1; echo "SSH prêt ($((i*10))s)"; break; fi
-    sleep 10
-  done
-  [ "$OK" = "1" ] || { echo "ERREUR: ssh jamais prêt"; exit 1; }
-
-  echo "--- tunnel (méthode C : -L + commande sleep qui maintient) ---"
-  pkill -f "50552" 2>/dev/null; sleep 1
-  nohup gh codespace ssh -c "$CS" -- -L 50552:127.0.0.1:50052 sleep 100000 </dev/null >/tmp/tunnel.log 2>&1 &
-  TPID=$!
-  TUN_OK=0
-  for i in $(seq 1 6); do
-    sleep 8
-    if ss -tln 2>/dev/null | grep -q 50552; then TUN_OK=1; break; fi
-  done
-  if [ "$TUN_OK" = "1" ]; then
-    echo "TUNNEL OK ✓ ($((SECONDS))s)"
-  else
-    echo "tunnel.log:"; cat /tmp/tunnel.log | tail -8
-    echo "--- repli : ssh natif via --config ---"
-    gh codespace ssh --config -c "$CS" > /tmp/cs.config 2>/dev/null
-    HA=$(grep -i "^Host " /tmp/cs.config | head -1 | awk '{print $2}')
-    nohup ssh -F /tmp/cs.config -o StrictHostKeyChecking=no -L 50552:127.0.0.1:50052 "$HA" sleep 100000 </dev/null >/tmp/tunnel2.log 2>&1 &
-    TPID=$!
-    sleep 10
-    ss -tln 2>/dev/null | grep -q 50552 && { TUN_OK=1; echo "TUNNEL B OK ✓"; } || { echo "TUNNEL B KO:"; tail -5 /tmp/tunnel2.log; gh api -X POST "user/codespaces/$CS/stop" --silent; exit 1; }
-  fi
-
-  echo "--- lancement rpc-server sur le nœud (script embarqué base64) ---"
-  cat > /tmp/start-rpc.sh <<'RPC'
-#!/bin/bash
-pkill -f "[r]pc-server" 2>/dev/null
-sleep 1
-export LD_LIBRARY_PATH="$HOME/rpcbin:$LD_LIBRARY_PATH"
-nohup "$HOME/rpcbin/ggml-rpc-server" --port 50052 >/tmp/rpc.log 2>&1 &
-sleep 3
-ss -tln | grep 50052 && echo RPC_ECOUTE
-exit 0
-RPC
-  B64=$(base64 -w0 /tmp/start-rpc.sh)
-  gh codespace ssh -c "$CS" -- "echo $B64 | base64 -d > /tmp/start-rpc.sh && bash /tmp/start-rpc.sh" 2>&1 | tail -2
-  echo "--- vérification indépendante (2e session SSH) ---"
-  gh codespace ssh -c "$CS" -- 'ss -tln | grep 50052 && echo VU_DEPU_L_EXTERIEUR || cat /tmp/rpc.log | tail -4' 2>&1 | tail -3
-  echo "--- vérif tunnel porte du trafic ---"
-  timeout 5 bash -c 'exec 3<>/dev/tcp/127.0.0.1/50552' 2>/dev/null && echo "port 50552 répond ✓" || echo "port 50552 muet ⚠️"
-
+  echo "===== [ACTION] TEST TEMPORAIRE — QWEN 3.6 (MoE A3B) ====="
+  echo "# host: $(hostname) | date: $(date -u +%FT%TZ)"
   cd "$HOME/persist" || exit 1
   export LD_LIBRARY_PATH="$PWD/bin:${LD_LIBRARY_PATH:-}"
   mkdir -p "$HOME/gguf-cache"
-  GGUF="$HOME/gguf-cache/gemma-4-26B-A4B-it-UD-Q4_K_M.gguf"
-  if [ ! -s "$GGUF" ]; then
-    echo "--- téléchargement TEMPORAIRE (16,9 Go) ---"
-    T1=$(date +%s)
-    curl -sL --retry 2 --max-time 650 -o "$GGUF" "https://huggingface.co/unsloth/gemma-4-26B-A4B-it-GGUF/resolve/main/gemma-4-26B-A4B-it-UD-Q4_K_M.gguf"
-    echo "téléchargé : $(du -h "$GGUF" | cut -f1) en $(( $(date +%s) - T1 )) s"
+
+  echo "--- 1) découverte des dépôts GGUF Qwen3.6 sur HuggingFace ---"
+  CANDS=$(curl -sL --max-time 30 "https://huggingface.co/api/models?search=Qwen3.6&limit=100" | python3 -c "
+import json,sys
+try:
+    d=json.load(sys.stdin)
+    ids=[m['id'] for m in d if 'gguf' in m.get('id','').lower()]
+    for i in sorted(ids):
+        print(i)
+except Exception: pass")
+  echo "$CANDS" | head -12
+  REPO=$(echo "$CANDS" | grep -iE "35b.*a3b|a3b.*35b" | head -1)
+  [ -z "$REPO" ] && REPO=$(echo "$CANDS" | grep -iE "a3b" | head -1)
+  if [ -z "$REPO" ]; then
+    echo "!! AUCUN dépôt MoE A3B trouvé en 3.6 — la génération 3.6 n'a visiblement pas de 35B-A3B"
+    echo "    (référentiel 3.6 connu : 27B dense ; les -A3B appartiennent aux générations 3.5/3.8)"
+    exit 0
   fi
-  echo "--- RAM pilote avant ---"; free -h | head -2
+  echo "→ dépôt retenu : $REPO"
+
+  echo "--- 2) sélection du GGUF (3-4 bits, ≤ ~14 GiB) ---"
+  FILE=$(curl -sL --max-time 30 "https://huggingface.co/api/models/$REPO" | PREFS="UD-IQ3_M|IQ3_M|UD-Q3_K_M|Q3_K_M|UD-IQ3_XXS|IQ3_XXS|UD-IQ4_XS|IQ4_XS" python3 -c "
+import json,sys,os
+try:
+    d=json.load(sys.stdin)
+    files=[f['rfilename'] for f in d.get('siblings',[]) if f['rfilename'].endswith('.gguf')]
+    files=[f for f in files if not any(x in f for x in ('BF16','mmproj','-00001','-00002','F16'))]
+    prefs=os.environ.get('PREFS','').split('|')
+    for p in prefs:
+        for f in files:
+            if p in f: print(f); sys.exit()
+except Exception: pass")
+  [ -z "$FILE" ] && { echo "!! aucun gguf quantisé trouvé dans $REPO"; exit 0; }
+  echo "fichier : $FILE"
+
+  echo "--- 3) téléchargement TEMPORAIRE ---"
+  T1=$(date +%s)
+  curl -sL --retry 2 --max-time 600 -o "$HOME/gguf-cache/$FILE" "https://huggingface.co/$REPO/resolve/main/$FILE" || { echo "!! échec DL"; exit 0; }
+  echo "DL : $(du -h "$HOME/gguf-cache/$FILE" | cut -f1) en $(( $(date +%s) - T1 )) s"
+
+  echo "--- 4) vitesse (question test) ---"
+  timeout 300 bin/llama-cli -m "$HOME/gguf-cache/$FILE" \
+    -st -p "Quelle est la capitale de la France ?" \
+    -n 150 --temp 0 --threads 4 --simple-io </dev/null > /tmp/m.log 2>&1
+  echo "réponse : $(grep -a "Paris" /tmp/m.log | head -1 | tail -c 130)"
+  grep -aE "Prompt:|Generation:" /tmp/m.log | tail -1
   echo ""
-  echo "===== INFÉRENCE FÉDÉRÉE — QUESTION : $Q ====="
-  echo "--- RAM du nœud distant avant chargement ---"
-  gh codespace ssh -c "$CS" -- 'free -h | head -2' 2>&1 | tail -2
-  echo "--- chargement fédéré -ngl 8 (charge allégée ~4,5 Go au distant) ---"
-  echo "[$(date -u +%T)] début inference"
-  timeout 1150 bin/llama-cli -m "$GGUF" --rpc 127.0.0.1:50552 -ngl 8 \
-    -st -p "$Q" -n 100 --temp 0 --threads 4 --simple-io </dev/null > /tmp/o.log 2>&1
-  RC=$?
-  echo "[$(date -u +%T)] fin inference (code=$RC)"
-  echo "--- où le chargement s'est arrêté (dernières lignes brutes) ---"
-  tr '\r' '\n' < /tmp/o.log | grep -aE "load|rpc|Layers|CPU|RPC|buffers" | tail -12
-  echo "--- réponse ---"
-  grep -avE "^> |estimate|tasks|system_info|print_info|load:|llama_|^[[:space:]]*$" /tmp/o.log | tail -22
-  echo "--- répartition RPC ---"
-  grep -aiE "rpc|offload|split" /tmp/o.log | head -8
-  echo "--- performances ---"
-  grep -E "Prompt:|Generation:|MAX_RSS" /tmp/o.log | tail -3
-  GEN=$(grep -oP 'Generation: \K[0-9.]+' /tmp/o.log | head -1)
-  [ -n "$GEN" ] && awk -v g="$GEN" 'BEGIN{ if (g+0>10.0) printf "VERDICT: ⚡ %.1f t/s > 10\n", g; else printf "VERDICT: 🐢 %.1f t/s <= 10\n", g }'
-  echo ""
-  echo "--- NETTOYAGE (rien de sauvegardé) ---"
-  kill $TPID 2>/dev/null
-  rm -f "$GGUF" && echo "cache pilote purgé ✓"
-  gh codespace ssh -c "$CS" -- 'pkill -f "[r]pc-server"; echo "rpc tué ✓"' 2>&1 | tail -1
-  gh api -X POST "user/codespaces/$CS/stop" --silent && echo "codespace arrêté ✓ (RAM effacée, disque intact)"
-  echo "code=$RC — FIN TEST FÉDÉRÉ"
+  echo "--- 5) PURGE (rien de sauvegardé) ---"
+  rm -f "$HOME/gguf-cache/$FILE" && echo "cache purgé ✓ — codespace non concerné (tâche Actions)"
+  echo "===== FIN TEST QWEN 3.6 ====="
 } 2>&1
 exit 0
