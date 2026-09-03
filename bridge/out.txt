@@ -1,53 +1,84 @@
-===== TÂCHE 0903-160844-action → ACTION (exécution locale) =====
-# host: runnervmgx7h7 | date: 2026-09-03T16:08:53Z
+===== TÂCHE 0903-160935-action → ACTION (exécution locale) =====
+# host: runnervmgx7h7 | date: 2026-09-03T16:09:46Z
 # état persistant restauré : OUI — 31 fichiers, 40M
 
 ----- DÉBUT DE LA TÂCHE -----
-===== [ACTION] FLUX.2 KLEIN 4B — génération image (éphémère) =====
-# host: runnervmgx7h7 | date: 2026-09-03T16:08:53Z
---- 1) reconnaissance des dépôts flux.2-klein ---
-   black-forest-labs/FLUX.2-klein-9B 238362
-   ponpoke/flux2-klein-9b-uncensored-text-encoder 33885
-   black-forest-labs/FLUX.2-klein-base-9b-fp8 25874
-   black-forest-labs/FLUX.2-klein-9b-fp8 54696
-   ponpoke/flux2-klein-4b-uncensored-text-encoder 11604
-   black-forest-labs/FLUX.2-klein-4B 519431
-   wikeeyang/Flux2-Klein-9B-True-V3 35809
-   black-forest-labs/FLUX.2-klein-base-9B 78144
-   unsloth/FLUX.2-klein-9B-GGUF 117392
-   dx8152/Flux2-Klein-9B-Consistency 45277
-   wikeeyang/Flux2-Klein-9B-True-V2 458060
-   darknight9121/FLUX.2-klein-base-9B-bucket-uncensored 18341
-   black-forest-labs/FLUX.2-klein-base-4B 274377
-   black-forest-labs/FLUX.2-klein-9b-nvfp4 2723
-   unsloth/FLUX.2-klein-4B-GGUF 231452
---- 2) stable-diffusion.cpp : releases ? ---
-  tag: master-841-6b3edaa
-"tag_name": "master-841-6b3edaa"
---- 3) GGUF klein sur HF ? ---
-  GGUF? unsloth/FLUX.2-klein-9B-GGUF
-  GGUF? unsloth/FLUX.2-klein-4B-GGUF
-  GGUF? unsloth/FLUX.2-klein-base-9B-GGUF
-  GGUF? QiE2035/flux2-klein-9b-uncensored-text-encoder-Q2_K-GGUF
-  GGUF? unsloth/FLUX.2-klein-base-4B-GGUF
-  GGUF? OlegSkutte/FLUX.2-klein-4B-GGUF
-  GGUF? leejet/FLUX.2-klein-4B-GGUF
-  GGUF? leejet/FLUX.2-klein-base-4B-GGUF
-  GGUF? unsloth/FLUX.2-klein-9B-GGUF
-  GGUF? unsloth/FLUX.2-klein-4B-GGUF
-  GGUF? unsloth/FLUX.2-klein-base-9B-GGUF
-  GGUF? QiE2035/flux2-klein-9b-uncensored-text-encoder-Q2_K-GGUF
-  GGUF? unsloth/FLUX.2-klein-base-4B-GGUF
-  GGUF? OlegSkutte/FLUX.2-klein-4B-GGUF
-  GGUF? leejet/FLUX.2-klein-4B-GGUF
-  GGUF? leejet/FLUX.2-klein-base-4B-GGUF
+===== [ACTION] GÉNÉRATION — chat roux forêt ensoleillée (FLUX.2-klein-4B, éphémère) =====
+# host: runnervmgx7h7 | date: 2026-09-03T16:09:46Z
+--- 1) doc officielle flux2 de sd.cpp ---
+# How to Use
 
---- 4) vérif support FLUX.2 dans sd.cpp (README master) ---
-* **2026/01/18** 🚀 stable-diffusion.cpp now supports **FLUX.2-klein**  
-* **2025/11/30** 🚀 stable-diffusion.cpp now supports **FLUX.2-dev**  
-    - [FLUX.2-dev/FLUX.2-klein](./docs/flux2.md)
+## Flux.2-dev
 
-===== FIN DE LA RECONNAISSANCE (décision à l'étape 2) =====
------ FIN DE LA TÂCHE (code=0) -----
-[wrapper] tâche 0903-160844-action terminée sur action (code 0)
-snapshot: -rw-r--r-- 1 runner runner 16349060 Sep  3 16:08 bridge/state/snapshot.tar.gz
+### Download weights
+
+- Download FLUX.2-dev
+    - gguf: https://huggingface.co/city96/FLUX.2-dev-gguf/tree/main
+- Download vae
+    - safetensors: https://huggingface.co/black-forest-labs/FLUX.2-dev/tree/main
+- Download FLUX.2-small-decoder (full_encoder_small_decoder.safetensors) as an alternative VAE option
+    - safetensors: https://huggingface.co/black-forest-labs/FLUX.2-small-decoder/tree/main
+- Download Mistral-Small-3.2-24B-Instruct-2506-GGUF
+    - gguf: https://huggingface.co/unsloth/Mistral-Small-3.2-24B-Instruct-2506-GGUF/tree/main
+
+### Examples
+
+```
+.\bin\Release\sd-cli.exe --diffusion-model  ..\models\diffusion_models\flux2-dev-Q4_K_S.gguf --vae ..\models\vae\flux2_ae.safetensors  --llm ..\models\text_encoders\Mistral-Small-3.2-24B-Instruct-2506-Q4_K_M.gguf -r .\kontext_input.png -p "change 'flux.cpp' to 'flux2-dev.cpp'" --cfg-scale 1.0 --sampling-method euler -v --diffusion-fa --offload-to-cpu
+```
+
+<img alt="flux2 example" src="../assets/flux2/example.png" />
+
+## Flux.2 klein 4B / Flux.2 klein base 4B
+
+### Download weights
+
+- Download FLUX.2-klein-4B
+    - safetensors: https://huggingface.co/black-forest-labs/FLUX.2-klein-4B
+    - gguf: https://huggingface.co/leejet/FLUX.2-klein-4B-GGUF/tree/main
+- Download FLUX.2-klein-base-4B
+    - safetensors: https://huggingface.co/black-forest-labs/FLUX.2-klein-base-4B
+    - gguf: https://huggingface.co/leejet/FLUX.2-klein-base-4B-GGUF/tree/main
+- Download vae
+    - safetensors: https://huggingface.co/black-forest-labs/FLUX.2-dev/tree/main
+- Download FLUX.2-small-decoder (full_encoder_small_decoder.safetensors) as an alternative VAE option
+    - safetensors: https://huggingface.co/black-forest-labs/FLUX.2-small-decoder/tree/main
+- Download Qwen3 4b
+    - safetensors: https://huggingface.co/Comfy-Org/flux2-klein-4B/tree/main/split_files/text_encoders
+    - gguf: https://huggingface.co/unsloth/Qwen3-4B-GGUF/tree/main
+
+### Examples
+
+```
+.\bin\Release\sd-cli.exe --diffusion-model  ..\models\diffusion_models\flux-2-klein-4b.safetensors --vae ..\models\vae\flux2_ae.safetensors  --llm ..\models\text_encoders\qwen_3_4b.safetensors -p "a lovely cat" --cfg-scale 1.0 --steps 4 -v --offload-to-cpu --diffusion-fa
+```
+
+<img alt="flux2-klein-4b" src="../assets/flux2/flux2-klein-4b.png" />
+
+```
+.\bin\Release\sd-cli.exe --diffusion-model  ..\models\diffusion_models\flux-2-klein-4b.safetensors --vae ..\models\vae\flux2_ae.safetensors  --llm ..\models\text_encoders\qwen_3_4b.safetensors -r .\kontext_input.png -p "change 'flux.cpp' to 'klein.cpp'" --cfg-scale 1.0 --sampling-method euler -v --diffusion-fa --offload-to-cpu --steps 4
+```
+
+<img alt="flux2-klein-4b-edit" src="../assets/flux2/flux2-klein-4b-edit.png" />
+
+```
+.\bin\Release\sd-cli.exe --diffusion-model  ..\models\diffusion_models\flux-2-klein-base-4b.safetensors --vae ..\models\vae\flux2_ae.safetensors  --llm ..\models\text_encoders\qwen_3_4b.safetensors -p "a lovely cat" --cfg-scale 4.0 --steps 20 -v --offload-to-cpu --diffusion-fa
+```
+
+<img alt="flux2-klein-base-4b" src="../assets/flux2/flux2-klein-base-4b.png" />
+
+--- 2) binaire sd.cpp linux-x64 (release master-841) ---
+  asset: cudart-sd-bin-win-cu12-x64.zip 563 Mo
+  asset: sd-master-6b3edaa-bin-Darwin-macOS-26.5.2-arm64.zip 49 Mo
+  asset: sd-master-6b3edaa-bin-Linux-Ubuntu-24.04-x86_64-rocm-7.14.0.zip 264 Mo
+  asset: sd-master-6b3edaa-bin-Linux-Ubuntu-24.04-x86_64-vulkan.zip 46 Mo
+  asset: sd-master-6b3edaa-bin-Linux-Ubuntu-24.04-x86_64.zip 32 Mo
+  asset: sd-master-6b3edaa-bin-win-cpu-x64.zip 24 Mo
+  asset: sd-master-6b3edaa-bin-win-cuda12-x64.zip 336 Mo
+  asset: sd-master-6b3edaa-bin-win-rocm-7.14.0-x64.zip 197 Mo
+  asset: sd-master-6b3edaa-bin-win-vulkan-x64.zip 38 Mo
+asset retenu : 
+❌ pas de binaire linux — arrêt
+----- FIN DE LA TÂCHE (code=1) -----
+[wrapper] tâche 0903-160935-action terminée sur action (code 0)
+snapshot: -rw-r--r-- 1 runner runner 16349060 Sep  3 16:09 bridge/state/snapshot.tar.gz
