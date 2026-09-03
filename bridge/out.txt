@@ -1,48 +1,46 @@
-===== TÂCHE 0903-154444-action → ACTION (exécution locale) =====
-# host: runnervmejwal | date: 2026-09-03T15:44:54Z
+===== TÂCHE 0903-154631-action → ACTION (exécution locale) =====
+# host: runnervmgx7h7 | date: 2026-09-03T15:46:47Z
 # état persistant restauré : OUI — 31 fichiers, 40M
 
 ----- DÉBUT DE LA TÂCHE -----
 ===== [ACTION] COURSE AUX 10 T/S — Qwen3.6-35B-A3B + MTP spéculatif =====
-# host: runnervmejwal | date: 2026-09-03T15:44:54Z
+# host: runnervmgx7h7 | date: 2026-09-03T15:46:47Z
 --- 1) modèle principal IQ3_S (Xet rapide) ---
-Fetching 2 files:   0%|          | 0/2 [00:00<?, ?it/s]Fetching 2 files:  50%|█████     | 1/2 [00:00<00:00,  1.30it/s]Fetching 2 files: 100%|██████████| 2/2 [00:47<00:00, 27.88s/it]Fetching 2 files: 100%|██████████| 2/2 [00:47<00:00, 23.81s/it]
+Fetching 2 files:   0%|          | 0/2 [00:00<?, ?it/s]Fetching 2 files:  50%|█████     | 1/2 [00:01<00:01,  1.24s/it]Fetching 2 files: 100%|██████████| 2/2 [00:45<00:00, 26.78s/it]Fetching 2 files: 100%|██████████| 2/2 [00:45<00:00, 22.95s/it]
 main OK
 main : /home/runner/gguf-cache/q36mtp/main/IQ3_S/Qwen3.6-35B-A3B-IQ3_S-00001-of-00002.gguf (14G)
 --- 2) recherche d'une tête MTP (fichier nextn/mtp ≤ 2,5 Go) ---
 dépôt : havenoammo/Qwen3.6-35B-A3B-MTP-GGUF
   → tête trouvée : 35BA3B-MTP.gguf (903 Mo)
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
 head OK
 
 --- 3) TEST MTP SPÉCULATIF : main + tête (/home/runner/gguf-cache/q36mtp/head/35BA3B-MTP.gguf) ---
 réponse : 
-MAX_RSS_KB=15596
-(code=1)
+MAX_RSS_KB=578132
+(code=134)
 --- diagnostic échec MTP ---
-usage:
---spec-type none,draft-simple,draft-eagle3,draft-mtp,draft-dflash,draft-dspark,ngram-simple,ngram-map-k,ngram-map-k4v,ngram-mod,ngram-cache
-                                        comma-separated list of types of speculative decoding to use (default:
-                                        none)
-                                        (env: LLAMA_ARG_SPEC_TYPE)
-to show complete usage, run with -h
-Command exited with non-zero status 1
-MAX_RSS_KB=15596
+/home/runner/persist/bin/libllama-server-impl.so(_Z12llama_serverR13common_paramsiPPc+0x4246)[0x7f45b1cd08c6]
+/home/runner/persist/bin/libllama-cli-impl.so(_ZNSt6thread11_State_implINS_8_InvokerISt5tupleIJZN10cli_server5startER13common_paramsEUlvE_EEEEE6_M_runEv+0x15)[0x7f45b326a795]
+/lib/x86_64-linux-gnu/libstdc++.so.6(+0xecdb4)[0x7f45b28ecdb4]
+/lib/x86_64-linux-gnu/libc.so.6(+0x9cb84)[0x7f45b249cb84]
+/lib/x86_64-linux-gnu/libc.so.6(+0x129d6c)[0x7f45b2529d6c]
+timeout: the monitored command dumped core
+Command terminated by signal 6
+MAX_RSS_KB=578132
 
 --- 4) repli : spéculatif classique avec mini-draft Qwen3.5-0.8B ---
 draft OK /home/runner/gguf-cache/q36mtp/draft/Qwen3.5-0.8B-Q8_0.gguf
-réponse : 
-(code=1)
---- diagnostic échec draft ---
---draft, --draft-n, --draft-max N       the argument has been removed. use --spec-draft-n-max or
-                                        --spec-ngram-mod-n-max
-                                        (env: LLAMA_ARG_DRAFT_MAX)
-to show complete usage, run with -h
-Command exited with non-zero status 1
-MAX_RSS_KB=15504
+réponse :    - Expected Answer: Paris
+[ Prompt: 10.0 t/s | Generation: 3.4 t/s ]
+(code=0)
+
+--- 4bis) bonus : ngram-simple (spéculation sans draft) ---
+[ Prompt: 11.4 t/s | Generation: 8.1 t/s ]
 
 --- 5) PURGE ---
 purgé ✓ (rien de sauvegardé)
 ===== FIN COURSE AUX 10 T/S =====
 ----- FIN DE LA TÂCHE (code=0) -----
-[wrapper] tâche 0903-154444-action terminée sur action (code 0)
-snapshot: -rw-r--r-- 1 runner runner 16346895 Sep  3 15:46 bridge/state/snapshot.tar.gz
+[wrapper] tâche 0903-154631-action terminée sur action (code 0)
+snapshot: -rw-r--r-- 1 runner runner 16349060 Sep  3 15:49 bridge/state/snapshot.tar.gz
