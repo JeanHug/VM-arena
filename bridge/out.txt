@@ -1,23 +1,25 @@
-===== TÂCHE 0903-161018-action → ACTION (exécution locale) =====
-# host: runnervmgx7h7 | date: 2026-09-03T16:10:32Z
+===== TÂCHE 0903-161140-action → ACTION (exécution locale) =====
+# host: runnervmgx7h7 | date: 2026-09-03T16:11:51Z
 # état persistant restauré : OUI — 31 fichiers, 40M
 
 ----- DÉBUT DE LA TÂCHE -----
-===== [ACTION] GÉNÉRATION — chat roux forêt ensoleillée (recette officielle sd.cpp) =====
-# host: runnervmgx7h7 | début: 2026-09-03T16:10:32Z
---- 1) binaire sd.cpp (Ubuntu x86_64) ---
-zip OK
+===== [ACTION] GÉNÉRATION v4 — chat roux forêt (VAE miroir Comfy + libs complètes) =====
+# host: runnervmgx7h7 | début: 2026-09-03T16:11:51Z
+--- 1) binaire + TOUTES les libs du zip ---
 binaire : /home/runner/flux-tmp/bin/sd-cli
-/home/runner/flux-tmp/bin/sd-cli: error while loading shared libraries: libstable-diffusion.so: cannot open shared object file: No such file or directory
---- 2) téléchargements (Xet) ---
-diffusion : flux-2-klein-4b-Q4_0.gguf
-Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+stable-diffusion.cpp version unknown, commit 6b3edaa
+--- 2) poids (diffusion + qwen3-4b + VAE miroir non-gated) ---
 diffusion OK
-Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
 qwen3-4b OK
-vae : ae.safetensors
-httpx.HTTPStatusError: Client error '401 Unauthorized' for url 'https://huggingface.co/black-forest-labs/FLUX.2-dev/resolve/main/ae.safetensors'
-For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401
+sonde VAE : Comfy-Org/flux2-klein-4B (split_files/vae)
+  → VAE : split_files/vae/split_files/vae/flux2-vae.safetensors
+Traceback (most recent call last):
+  File "/home/runner/.local/lib/python3.12/site-packages/huggingface_hub/utils/_http.py", line 808, in hf_raise_for_status
+    response.raise_for_status()
+  File "/home/runner/.local/lib/python3.12/site-packages/httpx/_models.py", line 829, in raise_for_status
+    raise HTTPStatusError(message, request=request, response=self)
+httpx.HTTPStatusError: Client error '404 Not Found' for url 'https://huggingface.co/Comfy-Org/vae-text-encorder-for-flux-klein-4b/resolve/main/split_files/vae/split_files/vae/flux2-vae.safetensors'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404
 
 The above exception was the direct cause of the following exception:
 
@@ -29,36 +31,57 @@ Traceback (most recent call last):
   File "/home/runner/.local/lib/python3.12/site-packages/huggingface_hub/file_download.py", line 1007, in hf_hub_download
     return _hf_hub_download_to_local_dir(
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/.local/lib/python3.12/site-packages/huggingface_hub/file_download.py", line 1381, in _hf_hub_download_to_local_dir
-    _raise_on_head_call_error(head_call_error, force_download, local_files_only)
-  File "/home/runner/.local/lib/python3.12/site-packages/huggingface_hub/file_download.py", line 1915, in _raise_on_head_call_error
-    raise head_call_error
-huggingface_hub.errors.GatedRepoError: 401 Client Error. (Request ID: Root=1-6a999c1b-3a7c3f253bf994c0648cea1a;00c20954-84b2-4c55-b6b3-fb93de295a83)
+  File "/home/runner/.local/lib/python3.12/site-packages/huggingface_hub/file_download.py", line 1326, in _hf_hub_download_to_local_dir
+    (url_to_download, etag, commit_hash, expected_size, xet_file_data, head_call_error) = _get_metadata_or_catch_error(
+                                                                                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/.local/lib/python3.12/site-packages/huggingface_hub/file_download.py", line 1723, in _get_metadata_or_catch_error
+    metadata = get_hf_file_metadata(
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/.local/lib/python3.12/site-packages/huggingface_hub/utils/_validators.py", line 88, in _inner_fn
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/.local/lib/python3.12/site-packages/huggingface_hub/file_download.py", line 1630, in get_hf_file_metadata
+    response = _httpx_follow_hub_redirects_with_backoff(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/.local/lib/python3.12/site-packages/huggingface_hub/utils/_http.py", line 733, in _httpx_follow_hub_redirects_with_backoff
+    hf_raise_for_status(response)
+  File "/home/runner/.local/lib/python3.12/site-packages/huggingface_hub/utils/_http.py", line 828, in hf_raise_for_status
+    raise _format(RemoteEntryNotFoundError, message, response, repo_type=repo_type, repo_id=repo_id) from e
+huggingface_hub.errors.RemoteEntryNotFoundError: 404 Client Error. (Request ID: Root=1-6a999c7d-12ff7e79709db1cd5f88683c;015f7fe9-8ac6-4c09-ba17-a301313b0e19)
 
-Cannot access gated repo for url https://huggingface.co/black-forest-labs/FLUX.2-dev/resolve/main/ae.safetensors.
-Access to model black-forest-labs/FLUX.2-dev is restricted. You must have access to it and be authenticated to access it. Please log in.
-4.0K	/home/runner/flux-tmp/w/.cache/huggingface/.gitignore
-4.0K	/home/runner/flux-tmp/w/.cache/huggingface/download/flux-2-klein-4b-Q4_0.gguf.metadata
-0	/home/runner/flux-tmp/w/.cache/huggingface/download/flux-2-klein-4b-Q4_0.gguf.lock
-0	/home/runner/flux-tmp/w/.cache/huggingface/download/Qwen3-4B-Q4_K_M.gguf.lock
-4.0K	/home/runner/flux-tmp/w/.cache/huggingface/download/Qwen3-4B-Q4_K_M.gguf.metadata
-0	/home/runner/flux-tmp/w/.cache/huggingface/download/ae.safetensors.lock
-4.0K	/home/runner/flux-tmp/w/.cache/huggingface/CACHEDIR.TAG
+Entry Not Found for url: https://huggingface.co/Comfy-Org/vae-text-encorder-for-flux-klein-4b/resolve/main/split_files/vae/split_files/vae/flux2-vae.safetensors.
 2.3G	/home/runner/flux-tmp/w/flux-2-klein-4b-Q4_0.gguf
 2.4G	/home/runner/flux-tmp/w/Qwen3-4B-Q4_K_M.gguf
+4.0K	/home/runner/flux-tmp/w/vae/.cache/huggingface/.gitignore
+0	/home/runner/flux-tmp/w/vae/.cache/huggingface/download/split_files/vae/split_files/vae/flux2-vae.safetensors.lock
+4.0K	/home/runner/flux-tmp/w/vae/.cache/huggingface/CACHEDIR.TAG
 DIFFP=/home/runner/flux-tmp/w/flux-2-klein-4b-Q4_0.gguf
 LLMP=/home/runner/flux-tmp/w/Qwen3-4B-Q4_K_M.gguf
 VAEPF=
 
---- 3) GÉNÉRATION (4 steps, 768x512, 4 threads) ---
-/home/runner/flux-tmp/bin/sd-cli: error while loading shared libraries: libstable-diffusion.so: cannot open shared object file: No such file or directory
-(code génération=0)
+--- 3) GÉNÉRATION (4 steps, 768x512) ---
+[ERROR] model_manager.cpp:640  - VAE tensor 'first_stage_model.encoder.mid.block_2.conv1.weight' not in model metadata
+[ERROR] model_manager.cpp:640  - VAE tensor 'first_stage_model.encoder.mid.block_2.conv2.bias' not in model metadata
+[ERROR] model_manager.cpp:640  - VAE tensor 'first_stage_model.encoder.mid.block_2.conv2.weight' not in model metadata
+[ERROR] model_manager.cpp:640  - VAE tensor 'first_stage_model.encoder.mid.block_2.norm1.bias' not in model metadata
+[ERROR] model_manager.cpp:640  - VAE tensor 'first_stage_model.encoder.mid.block_2.norm1.weight' not in model metadata
+[ERROR] model_manager.cpp:640  - VAE tensor 'first_stage_model.encoder.mid.block_2.norm2.bias' not in model metadata
+[ERROR] model_manager.cpp:640  - VAE tensor 'first_stage_model.encoder.mid.block_2.norm2.weight' not in model metadata
+[ERROR] model_manager.cpp:640  - VAE tensor 'first_stage_model.encoder.norm_out.bias' not in model metadata
+[ERROR] model_manager.cpp:640  - VAE tensor 'first_stage_model.encoder.norm_out.weight' not in model metadata
+[ERROR] model_manager.cpp:640  - VAE tensor 'first_stage_model.post_quant_conv.bias' not in model metadata
+[ERROR] model_manager.cpp:640  - VAE tensor 'first_stage_model.post_quant_conv.weight' not in model metadata
+[ERROR] model_manager.cpp:640  - VAE tensor 'first_stage_model.quant_conv.bias' not in model metadata
+[ERROR] model_manager.cpp:640  - VAE tensor 'first_stage_model.quant_conv.weight' not in model metadata
+[ERROR] stable-diffusion.cpp:1694 - model metadata validation failed
+[INFO ] main.cpp:924  - new_sd_ctx_t failed
+(code=0)
 
 --- 4) publication + purge ---
-❌ pas d'image — dernières lignes:
-purgé ✓ (éphémère, comme demandé)
-durée totale : 35 s
+❌ pas d'image générée
+purgé ✓ (éphémère)
+durée totale : 54 s
 ===== FIN =====
 ----- FIN DE LA TÂCHE (code=0) -----
-[wrapper] tâche 0903-161018-action terminée sur action (code 0)
-snapshot: -rw-r--r-- 1 runner runner 16349060 Sep  3 16:11 bridge/state/snapshot.tar.gz
+[wrapper] tâche 0903-161140-action terminée sur action (code 0)
+snapshot: -rw-r--r-- 1 runner runner 16349060 Sep  3 16:12 bridge/state/snapshot.tar.gz
