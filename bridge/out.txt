@@ -1,25 +1,65 @@
-===== TÂCHE 0903-061009-action → ACTION (exécution locale) =====
-# host: runnervmgx7h7 | date: 2026-09-03T06:10:19Z
+===== TÂCHE 0903-061552-action → ACTION (exécution locale) =====
+# host: runnervmgx7h7 | date: 2026-09-03T06:16:01Z
 # état persistant restauré : OUI — 31 fichiers, 40M
 
 ----- DÉBUT DE LA TÂCHE -----
-===== ÉCHELLE AA — COMPLÉMENT (2 modèles manquants) =====
-## Granite-4.2-3B
-dépôt unsloth/granite-4.2-3b-GGUF : rien
-dépôt : ibm-granite/granite-4.2-3b-GGUF → granite-4.2-3b-Q4_K_M.gguf
-DL: 2.1G en 70s
-réponse : The capital of France is Paris.
-[ Prompt: 25.5 t/s | Generation: 15.6 t/s ]
-(purgé)
+===== [FEDERE 32 Go] GEMMA-4-26B-A4B UD-Q4_K_M (16,9 Go) sur 2 nœuds =====
+# host pilote: runnervmgx7h7 | date: 2026-09-03T06:16:01Z
+codespace nœud : laughing-guacamole-g4px7pr4v9xgfp4gr (Shutdown)
+--- attente SSH ---
+SSH prêt (10s)
+--- tunnel (méthode C : -L + commande sleep qui maintient) ---
+TUNNEL OK ✓ (26s)
+--- lancement rpc-server sur le nœud (script embarqué base64) ---
+LISTEN 0      1          127.0.0.1:50052      0.0.0.0:*          
+RPC_ECOUTE
+--- vérification indépendante (2e session SSH) ---
+LISTEN 0      1          127.0.0.1:50052      0.0.0.0:*          
+VU_DEPU_L_EXTERIEUR
+--- vérif tunnel porte du trafic ---
+port 50552 répond ✓
+--- téléchargement TEMPORAIRE (16,9 Go) ---
+téléchargé : 16G en 56 s
+--- RAM pilote avant ---
+               total        used        free      shared  buff/cache   available
+Mem:            15Gi       1.0Gi       240Mi        43Mi        14Gi        14Gi
 
-## gpt-oss-20b
-dépôt : unsloth/gpt-oss-20b-GGUF → gpt-oss-20b-Q4_K_M.gguf
-DL: 11G en 180s
-réponse :  French: "Quelle est la capitale de la France ?" They want the capital of France. The answer: Paris. Provide in French.
-[ Prompt: 8.2 t/s | Generation: 9.9 t/s ]
-(purgé)
+===== INFÉRENCE FÉDÉRÉE — QUESTION : Quelle est la capitale de la France ? =====
+--- RAM du nœud distant avant chargement ---
+               total        used        free      shared  buff/cache   available
+Mem:            15Gi       1.3Gi       7.1Gi        60Mi       7.6Gi        14Gi
+--- chargement fédéré -ngl 8 (charge allégée ~4,5 Go au distant) ---
+[06:17:39] début inference
+[06:36:50] fin inference (code=124)
+--- où le chargement s'est arrêté (dernières lignes brutes) ---
+--- réponse ---
+Loading model... 
+▄▄ ▄▄
+██ ██
+██ ██  ▀▀█▄ ███▄███▄  ▀▀█▄    ▄████ ████▄ ████▄
+██ ██ ▄█▀██ ██ ██ ██ ▄█▀██    ██    ██ ██ ██ ██
+██ ██ ▀█▄██ ██ ██ ██ ▀█▄██ ██ ▀████ ████▀ ████▀
+                                    ██    ██
+                                    ▀▀    ▀▀
+build      : b10760-0f3a71be1
+model      : /home/runner/gguf-cache/gemma-4-26B-A4B-it-UD-Q4_K_M.gguf
+ftype      : Q4_K - Medium
+modalities : text
+available commands:
+  /exit or Ctrl+C     stop or exit
+  /regen              regenerate the last response
+  /clear              clear the chat history
+  /read <file>        add a text file
+  /glob <pattern>     add text files using globbing pattern
+[0m
+--- répartition RPC ---
+--- performances ---
 
-===== FIN COMPLÉMENT =====
+--- NETTOYAGE (rien de sauvegardé) ---
+cache pilote purgé ✓
+rpc tué ✓
+codespace arrêté ✓ (RAM effacée, disque intact)
+code=124 — FIN TEST FÉDÉRÉ
 ----- FIN DE LA TÂCHE (code=0) -----
-[wrapper] tâche 0903-061009-action terminée sur action (code 0)
-snapshot: -rw-r--r-- 1 runner runner 16349060 Sep  3 06:15 bridge/state/snapshot.tar.gz
+[wrapper] tâche 0903-061552-action terminée sur action (code 0)
+snapshot: -rw-r--r-- 1 runner runner 16349060 Sep  3 06:36 bridge/state/snapshot.tar.gz
